@@ -14,10 +14,10 @@ def importDataFromFile(fileName,column1,column2):
                 returnedDictionary[eachLine[column1]] = eachLine[column2]
     return returnedDictionary
 
-countryAndZoneData = {}
-countryAndZoneData = importDataFromFile('Countries and Zones.csv','Destination country','Zones')
-print(len(countryAndZoneData))
-print(countryAndZoneData)
+# countryAndZoneData = {}
+# countryAndZoneData = importDataFromFile('Countries and Zones.csv','Destination country','Zones')
+# print(len(countryAndZoneData))
+# print(countryAndZoneData)
 
 countryAndZoneData = {}
 countryAndZoneData = importDataFromFile('Countries and Zones.csv','Destination country','Zones')
