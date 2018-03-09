@@ -20,7 +20,7 @@ def importDataFromFile(fileName,column1,column2,column3,column4):
 # print(countryAndZoneData)
 
 data = {}
-data = importDataFromFile('Economy Letters Price Guide ($).csv','Weight','Zone 1','Zone 2,3 and 5','Zone 4, 6, 7 and 9')
+data = importDataFromFile('Economy Letters Price Guide ($).csv','Weight sdcdws','Zone 1','Zone 2,3 and 5','Zone 4, 6, 7 and 9')
 print(len(data))
 print(data)
 
