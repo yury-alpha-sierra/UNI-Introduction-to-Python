@@ -4,32 +4,28 @@
 import csv
 import sys
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-
 # this is a base directory where all the data/csv files are kept
 dataBaseDirectory = './/data//'
 
-def importEconomyLetterPriceDataFromCsvFile(fileName):
+def importEconomyLetterPriceDataFromCsvFile(*argv):
     returnedDictionary = {}
-    field_names = 'weight','zone 1','zone 2','zone 3'
+    # field_names = 'weight','zone 1','zone 2','zone 3'
 
-    with open(dataBaseDirectory + fileName, 'r') as inputFile:
-        inputFileReader = csv.DictReader(inputFile,fieldnames=field_names)
-
+    with open(dataBaseDirectory + argv[0], 'r') as inputFile:
+        inputFileReader = csv.DictReader(inputFile,fieldnames=argv[1:])
+        for arguments in argv[1:]:
+            print(arguments)
         for eachLine in inputFileReader:
-            returnedDictionary[eachLine[inputFileReader.fieldnames[0]]] = eachLine[inputFileReader.fieldnames[1]],eachLine[inputFileReader.fieldnames[2]],eachLine[inputFileReader.fieldnames[3]]
+            returnedDictionary[eachLine[argv[1]]] = eachLine[argv[2]],eachLine[argv[3]],eachLine[argv[4]]
 
     return returnedDictionary
 
 economyLetterPriceData = {}
-economyLetterPriceData = importEconomyLetterPriceDataFromCsvFile('Economy Letters Price Guide ($).csv')
+economyLetterPriceData = importEconomyLetterPriceDataFromCsvFile('Economy Letters Price Guide ($).csv','weight','zone 1','zone 2','zone 3')
 
-
-economyLetterPriceDataTableKeys = []
-for eachKey in economyLetterPriceData.keys():
-    economyLetterPriceDataTableKeys.append(eachKey)
-    # print(eachKey)
-print(economyLetterPriceDataTableKeys)
-# for eachValue in economyLetterPriceData.values():
-#     print(eachValue)
+print(economyLetterPriceData.values())
+print(economyLetterPriceData.keys())
+for d in  economyLetterPriceData.keys():
+    print(d)
+for d in  economyLetterPriceData.values():
+    print(d)
