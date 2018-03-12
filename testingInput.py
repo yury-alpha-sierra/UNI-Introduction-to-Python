@@ -18,14 +18,14 @@ def importPriceDataFromCsvFile(filename):
 def getZoneLabel(dictionary, zone):
 
     zonePattern = re.compile(r'[' + str(zone) + ']')
-    y = None
+    zoneLabel = None
 
     for i in dictionary.keys():
 
         if re.search(zonePattern, i) is not None:
-            y = i
+           zoneLabel = i
 
-    return y
+    return zoneLabel
 
 
 def getWeightLabel(dictionary, weight):
@@ -33,36 +33,60 @@ def getWeightLabel(dictionary, weight):
     for i in dictionary.values():
         keyList = list(i.keys())
 
-    weightPattern = re.compile(r'\d{2,3}')
+    weightNumberPattern = re.compile(r'\d{1,3}')
+    weighUnitPattern = re.compile(r'\d{1,3}(kg)')
     j = 0
     while j < len(keyList):
-        matches = re.findall(weightPattern, keyList[j])
+        numberMatches = re.findall(weightNumberPattern, keyList[j])
+        unitMatches = re.findall(weighUnitPattern, keyList[j])
 
-        if len(matches) == 1:
-            if weight <= int(matches[0]):
-                return(keyList[j])
+        if not (len(unitMatches) == 0):
+            unitMultiplier = 1000
         else:
-            if (weight >= int(matches[0])) and (weight <= int(matches[1])):
-                return(keyList[j])
+            unitMultiplier = 1
+
+        if not (len(numberMatches) == 0):
+            if len(numberMatches) == 1:
+                if weight <= int(unitMultiplier * numberMatches[0]):
+                    return(keyList[j])
+            else:
+                if (weight >= int(unitMultiplier * numberMatches[0])) and (weight <= int(unitMultiplier * numberMatches[1])):
+                    return(keyList[j])
         j += 1
 
 
-zone = 6
+def getServicePrice(priceData,zone,weight):
+    
+    return priceData.get(getZoneLabel(priceData,zone)).get(str(getWeightLabel(priceData,weight)))
+
+zone = 1
 weight = 360
 
 economyLetterPriceData = {}
 economyLetterPriceData = importPriceDataFromCsvFile(
     'Economy Letters Price Guide ($).csv')
-print(economyLetterPriceData.get(getZoneLabel(economyLetterPriceData,zone)).get(str(getWeightLabel(economyLetterPriceData,weight))))
+print(getServicePrice(economyLetterPriceData,zone,weight))
 
 
 economyParcelByAirPriceData = {}
 economyParcelByAirPriceData = importPriceDataFromCsvFile(
     'Economy Parcel Price Guide_by Air ($).csv')
-print(economyParcelByAirPriceData.get(getZoneLabel(economyParcelByAirPriceData,zone)).get(str(getWeightLabel(economyParcelByAirPriceData,weight))))
+print(getServicePrice(economyParcelByAirPriceData,zone,weight))
 
 
 economyParcelBySeaPriceData = {}
 economyParcelBySeaPriceData = importPriceDataFromCsvFile(
-    'Economy Parcel Price Guide_by Air ($).csv')
-print(economyParcelBySeaPriceData.get(getZoneLabel(economyParcelBySeaPriceData,zone)).get(str(getWeightLabel(economyParcelBySeaPriceData,weight))))
+    'Economy Parcel Price Guide_by Sea ($).csv')
+print(getServicePrice(economyParcelBySeaPriceData,zone,weight))
+
+
+expressLetterPriceData = {}
+expressLetterPriceData = importPriceDataFromCsvFile(
+    'Express Letter Price Guide ($).csv')
+print(getServicePrice(expressLetterPriceData,zone,weight))
+
+
+satandardPrcelPriceData = {}
+satandardPrcelPriceData = importPriceDataFromCsvFile(
+    'Standard Parcel Price Guide ($).csv')
+print(getServicePrice(satandardPrcelPriceData,zone,weight))
