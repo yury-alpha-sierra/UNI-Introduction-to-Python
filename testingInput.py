@@ -43,7 +43,7 @@ def getWeightLabel(dictionary, weight):
         numberMatches = re.findall(weightNumberPattern, keyList[j])
         unitMatches = re.findall(weighUnitPattern, keyList[j])
 
-        # if found kg after the number prepare to convert to gr, otherwise make sure it stays in gr
+        # if found 'kg after the number prepare to convert to gr, otherwise make sure it stays in gr
         if not (len(unitMatches) == 0):
             unitMultiplier = 1000
         else:
@@ -69,55 +69,48 @@ def getServicePrice(priceData, zone, weight):
     return
 
 
-zone = 0
+def importCountryAndZoneData(filename):
+    returnDictionary = {}
+    with open(dataBaseDirectory + filename) as csvFile:
+        next(csvFile)
+        for eachLine in csvFile.readlines():
+            eachLine = eachLine.split(',')
+            returnDictionary[eachLine[0]] = eachLine[1]
+    return returnDictionary
+
+
+def isServicableCountry(countryName):
+    if countryName in countryAndZoneData:
+        return True
+    else:
+        return False
+
+def getZoneInfoFromCountry(countryName,Dict):
+    if isServicableCountry(countryName):
+        result = Dict.get(countryName)
+        numberPattern = re.compile(r'\d{1}')
+    else:
+        return None
+
+countryAndZoneData = importCountryAndZoneData('Countries and Zones.csv')
+economyLetterPriceData = importDataFromCsvFile('Economy Letters Price Guide ($).csv')
+economyParcelByAirPriceData = importDataFromCsvFile('Economy Parcel Price Guide_by Air ($).csv')
+economyParcelBySeaPriceData = importDataFromCsvFile('Economy Parcel Price Guide_by Sea ($).csv')
+expressLetterPriceData = importDataFromCsvFile('Express Letter Price Guide ($).csv')
+expressParcelPriceData = importDataFromCsvFile('Express Parcel Price Guide ($).csv')
+satandardPrcelPriceData = importDataFromCsvFile('Standard Parcel Price Guide ($).csv')
+
+
+zone = 4
 weight = 500
-
-countryAndZoneData = {}
-with open('.//data//Countries and Zones.csv') as csvFile:
-
-    # reader = csv.reader(csvfile)
-    next(csvFile)
-    for eachLine in csvFile.readlines():
-        eachLine = eachLine.split(',')
-        test = eachLine[0]
-        test1 = eachLine[1]
-        countryAndZoneData[test] = test1
-
 print(countryAndZoneData.get('United Kingdom'))
 
-# economyLetterPriceData = {}
-# economyLetterPriceData = importDataFromCsvFile(
-#     'Economy Letters Price Guide ($).csv')
-# print(getServicePrice(economyLetterPriceData, zone, weight))
+# if 'Japan' in countryAndZoneData:
+#     print('it is here')
 
-
-# economyParcelByAirPriceData = {}
-# economyParcelByAirPriceData = importDataFromCsvFile(
-#     'Economy Parcel Price Guide_by Air ($).csv')
-# print(getServicePrice(economyParcelByAirPriceData, zone, weight))
-
-
-# economyParcelBySeaPriceData = {}
-# economyParcelBySeaPriceData = importDataFromCsvFile(
-#     'Economy Parcel Price Guide_by Sea ($).csv')
-# print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
-
-
-# expressLetterPriceData = {}
-# expressLetterPriceData = importDataFromCsvFile(
-#     'Express Letter Price Guide ($).csv')
-# print(getServicePrice(expressLetterPriceData, zone, weight))
-
-
-# expressParcelPriceData = {}
-# expressParcelPriceData = importDataFromCsvFile(
-#     'Express Parcel Price Guide ($).csv')
-# print(getServicePrice(expressParcelPriceData, zone, weight))
-
-
-# satandardPrcelPriceData = {}
-# satandardPrcelPriceData = importDataFromCsvFile(
-#     'Standard Parcel Price Guide ($).csv')
-# print(getServicePrice(satandardPrcelPriceData, zone, weight))
-
-
+print(getServicePrice(economyLetterPriceData, zone, weight))
+print(getServicePrice(economyParcelByAirPriceData, zone, weight))
+print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
+print(getServicePrice(expressLetterPriceData, zone, weight))
+print(getServicePrice(expressParcelPriceData, zone, weight))
+print(getServicePrice(satandardPrcelPriceData, zone, weight))
