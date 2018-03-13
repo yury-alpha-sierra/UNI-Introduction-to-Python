@@ -17,13 +17,13 @@ def importPriceDataFromCsvFile(filename):
 
 def getZoneLabel(dictionary, zone):
 
-    zonePattern = re.compile(r'[' + str(zone) + ']')
+    zonePattern = re.compile(r'(' + str(zone) + ')')
     zoneLabel = None
 
     for i in dictionary.keys():
-
-        if re.search(zonePattern, i) is not None:
-           zoneLabel = i
+        matches = re.search(zonePattern, i)
+        if matches  is not None:
+            zoneLabel = i
 
     return zoneLabel
 
@@ -40,14 +40,13 @@ def getWeightLabel(dictionary, weight):
         numberMatches = re.findall(weightNumberPattern, keyList[j])
         unitMatches = re.findall(weighUnitPattern, keyList[j])
 
-        if not (len(unitMatches) == 0):
+        if not (len(unitMatches) == 0): #if found kg after the number prepare to convert to gr, otherwise make sure it stays in gr
             unitMultiplier = 1000
         else:
             unitMultiplier = 1
-        # unitWeight1 = unitMultiplier * numberMatches[0]
-        # unitWeight2 = unitMultiplier * numberMatches[1]
-        if not (len(numberMatches) == 0):
-            if len(numberMatches) == 1:
+
+        if not (len(numberMatches) == 0): #if numbers are found in the label
+            if len(numberMatches) == 1: #if only one number id found like in 'up to 500gr' or 'up to 1 kg'
                 if float(weight) <= float(float(unitMultiplier) * float(numberMatches[0])):
                     return(keyList[j])
             if len(numberMatches) == 2:
@@ -57,38 +56,42 @@ def getWeightLabel(dictionary, weight):
     return None
 
 
-def getServicePrice(priceData,zone,weight):
+def getServicePrice(priceData, zone, weight):
+    try:
+       return  float(priceData.get(getZoneLabel(priceData, zone)).get(str(getWeightLabel(priceData, weight))))
+    except (ValueError, AttributeError):
+        return None
+    return
 
-    return priceData.get(getZoneLabel(priceData,zone)).get(str(getWeightLabel(priceData,weight)))
 
-zone = 6
-weight = 36000
+zone = 1
+weight = 50
 
 economyLetterPriceData = {}
 economyLetterPriceData = importPriceDataFromCsvFile(
     'Economy Letters Price Guide ($).csv')
-print(getServicePrice(economyLetterPriceData,zone,weight))
+print(getServicePrice(economyLetterPriceData, zone, weight))
 
 
 economyParcelByAirPriceData = {}
 economyParcelByAirPriceData = importPriceDataFromCsvFile(
     'Economy Parcel Price Guide_by Air ($).csv')
-print(getServicePrice(economyParcelByAirPriceData,zone,weight))
+print(getServicePrice(economyParcelByAirPriceData, zone, weight))
 
 
 economyParcelBySeaPriceData = {}
 economyParcelBySeaPriceData = importPriceDataFromCsvFile(
     'Economy Parcel Price Guide_by Sea ($).csv')
-print(getServicePrice(economyParcelBySeaPriceData,zone,weight))
+print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
 
 
 expressLetterPriceData = {}
 expressLetterPriceData = importPriceDataFromCsvFile(
     'Express Letter Price Guide ($).csv')
-print(getServicePrice(expressLetterPriceData,zone,weight))
+print(getServicePrice(expressLetterPriceData, zone, weight))
 
 
 satandardPrcelPriceData = {}
 satandardPrcelPriceData = importPriceDataFromCsvFile(
     'Standard Parcel Price Guide ($).csv')
-print(getServicePrice(satandardPrcelPriceData,zone,weight))
+print(getServicePrice(satandardPrcelPriceData, zone, weight))
