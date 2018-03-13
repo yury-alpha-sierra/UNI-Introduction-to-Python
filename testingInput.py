@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import csv
 
-
+# this is a base directory where all the data/csv files are kept
 dataBaseDirectory = './/data//'
 
 
