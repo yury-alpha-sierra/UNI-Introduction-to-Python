@@ -22,7 +22,7 @@ def getZoneLabel(dictionary, zone):
 
     for i in dictionary.keys():
         matches = re.search(zonePattern, i)
-        if matches  is not None:
+        if matches is not None:
             zoneLabel = i
 
     return zoneLabel
@@ -40,13 +40,15 @@ def getWeightLabel(dictionary, weight):
         numberMatches = re.findall(weightNumberPattern, keyList[j])
         unitMatches = re.findall(weighUnitPattern, keyList[j])
 
-        if not (len(unitMatches) == 0): #if found kg after the number prepare to convert to gr, otherwise make sure it stays in gr
+        # if found kg after the number prepare to convert to gr, otherwise make sure it stays in gr
+        if not (len(unitMatches) == 0):
             unitMultiplier = 1000
         else:
             unitMultiplier = 1
 
-        if not (len(numberMatches) == 0): #if numbers are found in the label
-            if len(numberMatches) == 1: #if only one number id found like in 'up to 500gr' or 'up to 1 kg'
+        if not (len(numberMatches) == 0):  # if numbers are found in the label
+            # if only one number id found like in 'up to 500gr' or 'up to 1 kg'
+            if len(numberMatches) == 1:
                 if float(weight) <= float(float(unitMultiplier) * float(numberMatches[0])):
                     return(keyList[j])
             if len(numberMatches) == 2:
@@ -58,14 +60,14 @@ def getWeightLabel(dictionary, weight):
 
 def getServicePrice(priceData, zone, weight):
     try:
-       return  float(priceData.get(getZoneLabel(priceData, zone)).get(str(getWeightLabel(priceData, weight))))
+        return float(priceData.get(getZoneLabel(priceData, zone)).get(str(getWeightLabel(priceData, weight))))
     except (ValueError, AttributeError):
         return None
     return
 
 
-zone = 1
-weight = 50
+zone = 8
+weight = 500
 
 economyLetterPriceData = {}
 economyLetterPriceData = importPriceDataFromCsvFile(
@@ -89,6 +91,12 @@ expressLetterPriceData = {}
 expressLetterPriceData = importPriceDataFromCsvFile(
     'Express Letter Price Guide ($).csv')
 print(getServicePrice(expressLetterPriceData, zone, weight))
+
+
+expressParcelPriceData = {}
+expressParcelPriceData = importPriceDataFromCsvFile(
+    'Express Parcel Price Guide ($).csv')
+print(getServicePrice(expressParcelPriceData, zone, weight))
 
 
 satandardPrcelPriceData = {}
