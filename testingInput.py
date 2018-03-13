@@ -61,9 +61,10 @@ def getWeightLabel(dictionary, weight):
     return None
 
 
-def getServicePrice(priceData, zone, weight):
+def getServicePrice(dictionary, country, weight):
+    zone = getZoneInfoFromCountry(countryAndZoneData, country)
     try:
-        return float(priceData.get(getZoneLabel(priceData, zone)).get(str(getWeightLabel(priceData, weight))))
+        return float(dictionary.get(getZoneLabel(dictionary, zone)).get(str(getWeightLabel(dictionary, weight))))
     except (ValueError, AttributeError, TypeError):
         return None
     return
@@ -79,16 +80,20 @@ def importCountryAndZoneData(filename):
     return returnDictionary
 
 
-def isServicableCountry(countryName):
-    if countryName in countryAndZoneData:
+def isServicableCountry(dictionary, countryName):
+    if countryName in dictionary:
         return True
     else:
         return False
 
-def getZoneInfoFromCountry(countryName,Dict):
-    if isServicableCountry(countryName):
-        result = Dict.get(countryName)
+
+def getZoneInfoFromCountry(dictionary, countryName):
+    if isServicableCountry(dictionary, countryName):
+        result = dictionary.get(countryName)
         numberPattern = re.compile(r'\d{1}')
+        matches = re.findall(numberPattern, result)
+        if not (len(matches) == 0):
+            return matches[0]
     else:
         return None
 
@@ -101,16 +106,12 @@ expressParcelPriceData = importDataFromCsvFile('Express Parcel Price Guide ($).c
 satandardPrcelPriceData = importDataFromCsvFile('Standard Parcel Price Guide ($).csv')
 
 
-zone = 4
-weight = 500
-print(countryAndZoneData.get('United Kingdom'))
+country = 'Argentina'
+weight = 5000
 
-# if 'Japan' in countryAndZoneData:
-#     print('it is here')
-
-print(getServicePrice(economyLetterPriceData, zone, weight))
-print(getServicePrice(economyParcelByAirPriceData, zone, weight))
-print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
-print(getServicePrice(expressLetterPriceData, zone, weight))
-print(getServicePrice(expressParcelPriceData, zone, weight))
-print(getServicePrice(satandardPrcelPriceData, zone, weight))
+print('Economy Letter --> {}'.format(getServicePrice(economyLetterPriceData, country, weight)))
+print('Economy Parcel by Air --> {}'.format(getServicePrice(economyParcelByAirPriceData, country, weight)))
+print('Economy Parcel by Sea --> {}'.format(getServicePrice(economyParcelBySeaPriceData, country, weight)))
+print('Express Letter --> {}'.format(getServicePrice(expressLetterPriceData, country, weight)))
+print('Express Parcel --> {}'.format(getServicePrice(expressParcelPriceData, country, weight)))
+print('Standard Parcel--> {}'.format(getServicePrice(satandardPrcelPriceData, country, weight)))
