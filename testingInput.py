@@ -44,23 +44,25 @@ def getWeightLabel(dictionary, weight):
             unitMultiplier = 1000
         else:
             unitMultiplier = 1
-
+        # unitWeight1 = unitMultiplier * numberMatches[0]
+        # unitWeight2 = unitMultiplier * numberMatches[1]
         if not (len(numberMatches) == 0):
             if len(numberMatches) == 1:
-                if weight <= int(unitMultiplier * numberMatches[0]):
+                if float(weight) <= float(float(unitMultiplier) * float(numberMatches[0])):
                     return(keyList[j])
-            else:
-                if (weight >= int(unitMultiplier * numberMatches[0])) and (weight <= int(unitMultiplier * numberMatches[1])):
+            if len(numberMatches) == 2:
+                if (float(weight) >= float(unitMultiplier * float(numberMatches[0]))) and (float(weight) <= float(unitMultiplier * float(numberMatches[1]))):
                     return(keyList[j])
         j += 1
+    return None
 
 
 def getServicePrice(priceData,zone,weight):
-    
+
     return priceData.get(getZoneLabel(priceData,zone)).get(str(getWeightLabel(priceData,weight)))
 
-zone = 1
-weight = 360
+zone = 6
+weight = 36000
 
 economyLetterPriceData = {}
 economyLetterPriceData = importPriceDataFromCsvFile(
