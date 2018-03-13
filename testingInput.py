@@ -1,18 +1,21 @@
 import pandas as pd
-import re as re
+import re
+import csv
 
 
 dataBaseDirectory = './/data//'
 
 
-def importPriceDataFromCsvFile(filename):
+def importDataFromCsvFile(filename):
 
-    priceDataInDictionaryFormat = {}
-
-    priceDataInDictionaryFormat = pd.read_csv(
-        dataBaseDirectory + filename, header=0, index_col=0, squeeze=True).to_dict()
-
-    return priceDataInDictionaryFormat
+    dataInDictionaryFormat = {}
+    try:
+      dataInDictionaryFormat = pd.read_csv(
+           dataBaseDirectory + filename, header=0, index_col=0, squeeze=True).to_dict()
+    except (FileNotFoundError):
+        print('File {} could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(filename))
+        exit(404)
+    return dataInDictionaryFormat
 
 
 def getZoneLabel(dictionary, zone):
@@ -61,45 +64,60 @@ def getWeightLabel(dictionary, weight):
 def getServicePrice(priceData, zone, weight):
     try:
         return float(priceData.get(getZoneLabel(priceData, zone)).get(str(getWeightLabel(priceData, weight))))
-    except (ValueError, AttributeError):
+    except (ValueError, AttributeError, TypeError):
         return None
     return
 
 
-zone = 8
+zone = 0
 weight = 500
 
-economyLetterPriceData = {}
-economyLetterPriceData = importPriceDataFromCsvFile(
-    'Economy Letters Price Guide ($).csv')
-print(getServicePrice(economyLetterPriceData, zone, weight))
+countryAndZoneData = {}
+with open('.//data//Countries and Zones.csv') as csvFile:
+
+    # reader = csv.reader(csvfile)
+    next(csvFile)
+    for eachLine in csvFile.readlines():
+        eachLine = eachLine.split(',')
+        test = eachLine[0]
+        test1 = eachLine[1]
+        countryAndZoneData[test] = test1
+
+print(countryAndZoneData.get('United Kingdom'))
+
+# economyLetterPriceData = {}
+# economyLetterPriceData = importDataFromCsvFile(
+#     'Economy Letters Price Guide ($).csv')
+# print(getServicePrice(economyLetterPriceData, zone, weight))
 
 
-economyParcelByAirPriceData = {}
-economyParcelByAirPriceData = importPriceDataFromCsvFile(
-    'Economy Parcel Price Guide_by Air ($).csv')
-print(getServicePrice(economyParcelByAirPriceData, zone, weight))
+# economyParcelByAirPriceData = {}
+# economyParcelByAirPriceData = importDataFromCsvFile(
+#     'Economy Parcel Price Guide_by Air ($).csv')
+# print(getServicePrice(economyParcelByAirPriceData, zone, weight))
 
 
-economyParcelBySeaPriceData = {}
-economyParcelBySeaPriceData = importPriceDataFromCsvFile(
-    'Economy Parcel Price Guide_by Sea ($).csv')
-print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
+# economyParcelBySeaPriceData = {}
+# economyParcelBySeaPriceData = importDataFromCsvFile(
+#     'Economy Parcel Price Guide_by Sea ($).csv')
+# print(getServicePrice(economyParcelBySeaPriceData, zone, weight))
 
 
-expressLetterPriceData = {}
-expressLetterPriceData = importPriceDataFromCsvFile(
-    'Express Letter Price Guide ($).csv')
-print(getServicePrice(expressLetterPriceData, zone, weight))
+# expressLetterPriceData = {}
+# expressLetterPriceData = importDataFromCsvFile(
+#     'Express Letter Price Guide ($).csv')
+# print(getServicePrice(expressLetterPriceData, zone, weight))
 
 
-expressParcelPriceData = {}
-expressParcelPriceData = importPriceDataFromCsvFile(
-    'Express Parcel Price Guide ($).csv')
-print(getServicePrice(expressParcelPriceData, zone, weight))
+# expressParcelPriceData = {}
+# expressParcelPriceData = importDataFromCsvFile(
+#     'Express Parcel Price Guide ($).csv')
+# print(getServicePrice(expressParcelPriceData, zone, weight))
 
 
-satandardPrcelPriceData = {}
-satandardPrcelPriceData = importPriceDataFromCsvFile(
-    'Standard Parcel Price Guide ($).csv')
-print(getServicePrice(satandardPrcelPriceData, zone, weight))
+# satandardPrcelPriceData = {}
+# satandardPrcelPriceData = importDataFromCsvFile(
+#     'Standard Parcel Price Guide ($).csv')
+# print(getServicePrice(satandardPrcelPriceData, zone, weight))
+
+
