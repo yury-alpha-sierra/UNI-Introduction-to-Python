@@ -7,12 +7,13 @@ class Application:
     def __init__(self, name, dataDir):
         self.name = name
         self.servicesCollection = {}
-        self.dataBaseDirectory =  dataDir
+        self.dataBaseDirectory = dataDir
         self.country = ''
         self.weight = 0
 
     def registerService(self, name, object):
         pass
+
 
 class service:
     def __init__(self, name, dataDir, dataFile):
@@ -109,21 +110,34 @@ class service:
         else:
             return None
 
+
 postageService = Application('Postage Service', './/data//')
 postageService.country = 'New Zealand'
 postageService.weight = 150
 
-economyLetterService = service('Economy Letter',postageService.dataBaseDirectory,'Economy Letters Price Guide ($).csv')
-economyParcelByAirService = service('Economy Parcel by Air', postageService.dataBaseDirectory,'Economy Parcel Price Guide_by Air ($).csv')
-economyParcelBySeaService = service('Economy Parcel by Sea', postageService.dataBaseDirectory,'Economy Parcel Price Guide_by Sea ($).csv')
-expressLetterService = service('Express Letter', postageService.dataBaseDirectory,'Express Letter Price Guide ($).csv')
-expressParcelService = service('Express Parcel', postageService.dataBaseDirectory,'Express Parcel Price Guide ($).csv')
-standardPrcelService = service('Standard Parcel', postageService.dataBaseDirectory,'Standard Parcel Price Guide ($).csv')
+economyLetterService = service(
+    'Economy Letter', postageService.dataBaseDirectory, 'Economy Letters Price Guide ($).csv')
+economyParcelByAirService = service(
+    'Economy Parcel by Air', postageService.dataBaseDirectory, 'Economy Parcel Price Guide_by Air ($).csv')
+economyParcelBySeaService = service(
+    'Economy Parcel by Sea', postageService.dataBaseDirectory, 'Economy Parcel Price Guide_by Sea ($).csv')
+expressLetterService = service(
+    'Express Letter', postageService.dataBaseDirectory, 'Express Letter Price Guide ($).csv')
+expressParcelService = service(
+    'Express Parcel', postageService.dataBaseDirectory, 'Express Parcel Price Guide ($).csv')
+standardPrcelService = service(
+    'Standard Parcel', postageService.dataBaseDirectory, 'Standard Parcel Price Guide ($).csv')
 
 
-print('Economy Letter --> {}'.format(economyLetterService.getServicePrice(postageService.country, postageService.weight)))
-print('Economy Parcel by Air --> {}'.format(economyParcelByAirService.getServicePrice(postageService.country, postageService.weight)))
-print('Economy Parcel by Sea --> {}'.format(economyParcelBySeaService.getServicePrice(postageService.country, postageService.weight)))
-print('Express Letter --> {}'.format(expressLetterService.getServicePrice(postageService.country, postageService.weight)))
-print('Express Parcel --> {}'.format(expressParcelService.getServicePrice(postageService.country, postageService.weight)))
-print('Standard Parcel--> {}'.format(standardPrcelService.getServicePrice(postageService.country, postageService.weight)))
+print('Economy Letter --> {}'.format(economyLetterService.getServicePrice(
+    postageService.country, postageService.weight)))
+print('Economy Parcel by Air --> {}'.format(economyParcelByAirService.getServicePrice(
+    postageService.country, postageService.weight)))
+print('Economy Parcel by Sea --> {}'.format(economyParcelBySeaService.getServicePrice(
+    postageService.country, postageService.weight)))
+print('Express Letter --> {}'.format(expressLetterService.getServicePrice(
+    postageService.country, postageService.weight)))
+print('Express Parcel --> {}'.format(expressParcelService.getServicePrice(
+    postageService.country, postageService.weight)))
+print('Standard Parcel--> {}'.format(standardPrcelService.getServicePrice(
+    postageService.country, postageService.weight)))
