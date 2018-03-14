@@ -8,8 +8,8 @@ dataBaseDirectory = './/data//'
 class Application:
     def __init__(self, name, dataDir):
         self.name = name
-        self.servicesCollection = {}
 
+        self.MerchCollection = {}
     def registerService(object):
         pass
 
@@ -18,22 +18,23 @@ class service:
     def __init__(self, name, dataDir, dataFile):
         self.name = name
         self.dataDir = dataDir
-        self.dataFile = dataFile
+        self.dataFileName = None
         self.zoneWeightData = {}
-
-        self.zoneWeidgtData = importCountryAndZoneData(dataFile)
-
-    def importDataFromCsvFile(self, filename):
-        dataInDictionaryFormat = {}
-        try:
-            dataInDictionaryFormat = pd.read_csv(
-                self.dataDir + self.dataFile, header=0, index_col=0, squeeze=True).to_dict()
-        except (FileNotFoundError):
-            print('File {} could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(filename))
-            exit(404)
-        return dataInDictionaryFormat
+        self.dataFile = dataFile
+    
+    def set
 
 
+def importDataFromCsvFile(filename):
+
+    dataInDictionaryFormat = {}
+    try:
+      dataInDictionaryFormat = pd.read_csv(
+           dataBaseDirectory + filename, header=0, index_col=0, squeeze=True).to_dict()
+    except (FileNotFoundError):
+        print('File {} could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(filename))
+        exit(404)
+    return dataInDictionaryFormat
 
 
 def getZoneLabel(dictionary, zone):

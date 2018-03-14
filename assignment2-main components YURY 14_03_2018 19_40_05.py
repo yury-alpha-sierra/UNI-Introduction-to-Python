@@ -8,8 +8,8 @@ dataBaseDirectory = './/data//'
 class Application:
     def __init__(self, name, dataDir):
         self.name = name
-        self.servicesCollection = {}
 
+        self.MerchCollection = {}
     def registerService(object):
         pass
 
@@ -22,7 +22,7 @@ class service:
         self.zoneWeightData = {}
 
         self.zoneWeidgtData = importCountryAndZoneData(dataFile)
-
+    
     def importDataFromCsvFile(self, filename):
         dataInDictionaryFormat = {}
         try:
