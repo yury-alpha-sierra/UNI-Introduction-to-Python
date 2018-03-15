@@ -141,7 +141,7 @@ postageService.registerService('Standard Parcel','Standard Parcel Price Guide ($
 
 postageService.instantiateService()
 
-pprint(postageService.serviceNameCollection)
-pprint(postageService.servicesCollection)
+# pprint(postageService.serviceNameCollection)
+# pprint(postageService.servicesCollection)
 
 postageService.getAvailableOptions()
