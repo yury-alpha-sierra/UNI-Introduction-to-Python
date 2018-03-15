@@ -1,18 +1,28 @@
 import pandas as pd
 import re
 import csv
+from pprint import pprint
 
 
 class Application:
     def __init__(self, name, dataDir):
         self.name = name
-        self.servicesCollection = {}
+        self.servicesCollection = []
+        self.serviceNameCollection = {}
         self.dataBaseDirectory = dataDir
         self.country = ''
         self.weight = 0
 
-    def registerService(self, name, object):
-        pass
+    def registerService(self, name, file):
+        self.serviceNameCollection[name] = file
+
+    def instantiateService(self):
+        for eachService in self.serviceNameCollection:
+            self.servicesCollection.append(service(eachService, self.dataBaseDirectory, self.serviceNameCollection.get(eachService)))
+
+    def getAvailableOptions(self):
+        for eachService in self.servicesCollection:
+             print('{} --> {}'.format(eachService.getServiceName(),eachService.getServicePrice(self.country, self.weight)))
 
 
 class service:
@@ -33,17 +43,21 @@ class service:
             dataInDictionaryFormat = pd.read_csv(
                 self.dataDir + self.dataFile, header=0, index_col=0, squeeze=True).to_dict()
         except (FileNotFoundError):
-            print('File {} could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(self.dataFile))
+            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(self.dataFile))
             exit(404)
         return dataInDictionaryFormat
 
     def importCountryAndZoneData(self):
         returnDictionary = {}
-        with open(self.dataDir + self.countryFile) as csvFile:
-            # next(csvFile)
-            for eachLine in csvFile.readlines():
-                eachLine = eachLine.split(',')
-                returnDictionary[eachLine[0]] = eachLine[1]
+        try:
+            with open(self.dataDir + self.countryFile) as csvFile:
+                # next(csvFile)
+                for eachLine in csvFile.readlines():
+                    eachLine = eachLine.split(',')
+                    returnDictionary[eachLine[0]] = eachLine[1]
+        except(FileNotFoundError):
+            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(self.countryFile))
+            exit(404)
         return returnDictionary
 
     def getZoneLabel(self, dictionary, zone):
@@ -110,34 +124,24 @@ class service:
         else:
             return None
 
+    def getServiceName(self):
+        return self.name
+
 
 postageService = Application('Postage Service', './/data//')
 postageService.country = 'New Zealand'
 postageService.weight = 150
 
-economyLetterService = service(
-    'Economy Letter', postageService.dataBaseDirectory, 'Economy Letters Price Guide ($).csv')
-economyParcelByAirService = service(
-    'Economy Parcel by Air', postageService.dataBaseDirectory, 'Economy Parcel Price Guide_by Air ($).csv')
-economyParcelBySeaService = service(
-    'Economy Parcel by Sea', postageService.dataBaseDirectory, 'Economy Parcel Price Guide_by Sea ($).csv')
-expressLetterService = service(
-    'Express Letter', postageService.dataBaseDirectory, 'Express Letter Price Guide ($).csv')
-expressParcelService = service(
-    'Express Parcel', postageService.dataBaseDirectory, 'Express Parcel Price Guide ($).csv')
-standardPrcelService = service(
-    'Standard Parcel', postageService.dataBaseDirectory, 'Standard Parcel Price Guide ($).csv')
+postageService.registerService('Economy Letter','Economy Letters Price Guide ($).csv')
+postageService.registerService('Economy Parcel by Air','Economy Parcel Price Guide_by Air ($).csv')
+postageService.registerService('Economy Parcel by Sea', 'Economy Parcel Price Guide_by Sea ($).csv')
+postageService.registerService('Express Letter', 'Express Letter Price Guide ($).csv')
+postageService.registerService('Express Parcel', 'Express Parcel Price Guide ($).csv')
+postageService.registerService('Standard Parcel','Standard Parcel Price Guide ($).csv')
 
+postageService.instantiateService()
 
-print('Economy Letter --> {}'.format(economyLetterService.getServicePrice(
-    postageService.country, postageService.weight)))
-print('Economy Parcel by Air --> {}'.format(economyParcelByAirService.getServicePrice(
-    postageService.country, postageService.weight)))
-print('Economy Parcel by Sea --> {}'.format(economyParcelBySeaService.getServicePrice(
-    postageService.country, postageService.weight)))
-print('Express Letter --> {}'.format(expressLetterService.getServicePrice(
-    postageService.country, postageService.weight)))
-print('Express Parcel --> {}'.format(expressParcelService.getServicePrice(
-    postageService.country, postageService.weight)))
-print('Standard Parcel--> {}'.format(standardPrcelService.getServicePrice(
-    postageService.country, postageService.weight)))
+pprint(postageService.serviceNameCollection)
+pprint(postageService.servicesCollection)
+
+postageService.getAvailableOptions()
