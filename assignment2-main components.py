@@ -1,10 +1,10 @@
 import pandas as pd
 import re
 import csv
-from pprint import pprint
+import wx
 
 
-class Application:
+class Application():
     def __init__(self, name, dataDir):
         self.name = name
         self.servicesCollection = []
