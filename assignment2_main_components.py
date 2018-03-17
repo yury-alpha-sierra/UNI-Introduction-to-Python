@@ -92,9 +92,10 @@ class Service:
         return_dictionary = {}
         try:
             return_dictionary = pd.read_csv(
-                self.data_dir + self.data_file, header=0, index_col=0, squeeze=True).to_dict()
+                self.data_dir + self.data_file, header=0, index_col=0,
+                squeeze=True).to_dict()
         except FileNotFoundError:
-            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(
+            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format( # pylint: disable=C0301
                 self.data_file))
             exit(404)
         return return_dictionary
@@ -109,12 +110,12 @@ class Service:
         return_dictionary = {}
         try:
             with open(self.data_dir + self.country_file) as csv_file:
-                # next(csv_file)
+                next(csv_file)
                 for each_line in csv_file.readlines():
                     each_line = each_line.split(',')
                     return_dictionary[each_line[0]] = each_line[1]
         except FileNotFoundError:
-            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(
+            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format( # pylint: disable=C0301
                 self.country_file))
             exit(404)
         return return_dictionary
@@ -160,7 +161,8 @@ class Service:
             number_matches = re.findall(weight_number_pattern, key_list[j])
             unit_matches = re.findall(weigh_unit_pattern, key_list[j])
 
-            # if found 'kg after the number prepare to convert to gr, otherwise make sure it stays in gr
+            # if found 'kg after the number prepare to convert to gr,
+            # otherwise make sure it stays in gr
             if unit_matches:
                 unit_multiplier = 1000
             else:
@@ -169,10 +171,13 @@ class Service:
             if number_matches:  # if numbers are found in the label
                 # if only one number id found like in 'up to 500gr' or 'up to 1 kg'
                 if len(number_matches) == 1:
-                    if float(weight) <= float(float(unit_multiplier) * float(number_matches[0])):
+                    if float(weight) <= float(
+                            float(unit_multiplier) * float(number_matches[0])):
                         return key_list[j]
                 if len(number_matches) == 2:
-                    if (float(weight) >= float(unit_multiplier * float(number_matches[0]))) and (float(weight) <= float(unit_multiplier * float(number_matches[1]))):
+                    w_1 = unit_multiplier * float(number_matches[0])
+                    w_2 = unit_multiplier * float(number_matches[1])
+                    if (float(weight) >= float(w_1)) and (float(weight) <= float(w_2)):
                         return key_list[j]
             j += 1
         return None
@@ -193,11 +198,12 @@ class Service:
         try:
             zone_label = self.get_zone_label(zone)
             weight_label = self.get_weight_label(weight)
-            return float(self.zone_weight_data.get(zone_label).get(str(weight_label)))
+            return float(self.zone_weight_data.get(zone_label).get(
+                str(weight_label)))
         except(ValueError, AttributeError, TypeError):
             return None
 
-    def is_servicable_country(self, dictionary, country_name):
+    def is_servicable_country(self, dictionary, country_name): # pylint: disable=R0201
         """[summary]
 
         Arguments:
@@ -212,7 +218,7 @@ class Service:
             return True
         return False
 
-    def get_zone_info_from_country(self, dictionary, country_name):
+    def get_zone_info_from_country(self, dictionary, country_name):# pylint: disable=R1710
         """[summary]
 
         Arguments:
@@ -234,12 +240,20 @@ class Service:
 
     def get_service_name(self):
         """[summary]
+        """
+
+        pass
+
+    def get_all_countries(self):
+        """[summary]
 
         Returns:
             [type] -- [description]
         """
-
-        return self.name
+        list_of_countries = []
+        for all_items in self.country_and_zone_data:
+            list_of_countries.append(all_items)
+        return list_of_countries
 
 
 POSTAGE_SERVICE = Application('Postage Service', './/data//')
@@ -263,5 +277,13 @@ POSTAGE_SERVICE.instantiate_service()
 
 # pprint(POSTAGE_SERVICE.service_name_collection)
 # pprint(POSTAGE_SERVICE.services_collection)
+
+
+if POSTAGE_SERVICE.services_collection:
+    LIST_OF_ALL_COUNTRIES = POSTAGE_SERVICE.services_collection[0].get_all_countries()
+    for  every_item in LIST_OF_ALL_COUNTRIES:
+        print(every_item)
+
+
 
 POSTAGE_SERVICE.get_available_options()
