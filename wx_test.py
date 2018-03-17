@@ -25,14 +25,14 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
                               pos=(330, 200), size=(60, 20))
         self.Bind(wx.EVT_BUTTON, self.close_button, my_button)
         self.Bind(wx.EVT_CLOSE, self.close_window)
-        status_bar = self.CreateStatusBar()     # pylint: disable=unused-variable
-        menu_bar = wx.MenuBar()
+        self.status_bar = self.CreateStatusBar()     # pylint: disable=unused-variable
+        self.menu_bar = wx.MenuBar()
         first_menu = wx.Menu()
-        second_menu = wx.Menu()
-        first_menu.Append(wx.NewId(), "New Window", "This is a new window")
-        first_menu.Append(wx.NewId(), "Open...", "This will open a new window")
-        menu_bar.Append(first_menu, "File")
-        menu_bar.Append(second_menu, "Edit")
+        # second_menu = wx.Menu()
+        first_menu.Append(wx.NewId(), "Service", "This will start new postal service transaction.")
+        first_menu.Append(wx.NewId(), "Admin", "This will start admin functions.")
+        self.menu_bar.Append(first_menu, "Function")
+        # self.menu_bar.Append(second_menu, "Edit")
         list_choices = ['Arab Emirates',
                         'Argentina',
                         'Austria',
@@ -112,11 +112,18 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
                         'Vanuatu',
                         'Vietnam']
         self.country_choice = wx.Choice(
-            my_panel, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
-            choices=list_choices, style=0)  # , validator=DefaultValidator, name=ChoiceNameStr
+            my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
+            choices=list_choices, style=0, pos = (20, 120))  # , validator=DefaultValidator, name=ChoiceNameStr
         self.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
 
-        self.SetMenuBar(menu_bar)
+
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        l1 = wx.StaticText(my_panel, -1, "Text Field", pos=(0, 100))
+        hbox1.Add(l1, 1, wx.EXPAND|wx.ALIGN_LEFT|wx.ALL, 5) 
+        self.t1 = wx.TextCtrl(my_panel) 
+        
+        
+        self.SetMenuBar(self.menu_bar)
 
     def close_button(self, event):  # pylint: disable=W0613
         """[summary]
