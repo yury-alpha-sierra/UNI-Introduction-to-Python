@@ -16,6 +16,8 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
 
     def __init__(self, parent, id):                # pylint: disable=W0622
 
+        self.current_country = ""
+
         wx.Frame.__init__(self, parent, id,
                           "My firstg GUI app", size=(300, 200))
         my_panel = wx.Panel(self)
@@ -109,9 +111,11 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
                         'United States',
                         'Vanuatu',
                         'Vietnam']
-        country_choice = wx.Choice(
+        self.country_choice = wx.Choice(
             my_panel, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
             choices=list_choices, style=0)  # , validator=DefaultValidator, name=ChoiceNameStr
+        self.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
+
         self.SetMenuBar(menu_bar)
 
     def close_button(self, event):  # pylint: disable=W0613
@@ -120,7 +124,8 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         Arguments:
             event {[type]} -- [description]
         """
-
+        self.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
+        print(self.current_country)
         self.Close(True)
 
     def close_window(self, event):  # pylint: disable=W0613
