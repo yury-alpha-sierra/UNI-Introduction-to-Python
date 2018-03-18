@@ -9,7 +9,7 @@ import re
 import pandas as pd
 
 
-class Application():
+class Application:
     """[summary]
     """
 
