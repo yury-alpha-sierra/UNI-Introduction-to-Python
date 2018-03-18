@@ -121,14 +121,16 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         self.current_country = self.country_choice.GetString(
             self.country_choice.GetSelection())
 
-        self.my_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.my_weight_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.weight_label = wx.StaticText(
             my_panel, id=wx.ID_ANY, label="Enter item weight:")
-        self.my_boxsizer.Add(self.weight_label, 0)
+        self.my_weight_boxsizer.Add(self.weight_label, 0, border=3)
         self.weight_entry = wx.TextCtrl(my_panel)
         self.weight_entry.SetMaxLength(7)
-        self.my_boxsizer.Add(self.weight_entry, 10, wx.ALIGN_RIGHT, 5)
-        my_panel.SetSizer(self.my_boxsizer)
+        self.my_weight_boxsizer.Add(self.weight_entry, 0, wx.ALIGN_RIGHT, 5)
+        my_panel.SetSizer(self.my_weight_boxsizer)
+
+
         self.SetMenuBar(self.menu_bar)
 
     def close_button(self, event):  # pylint: disable=W0613
@@ -140,6 +142,7 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         self.current_country = self.country_choice.GetString(
             self.country_choice.GetSelection())
         print(self.current_country)
+        print(self.weight_label)
         self.Close(True)
 
     def close_window(self, event):  # pylint: disable=W0613
