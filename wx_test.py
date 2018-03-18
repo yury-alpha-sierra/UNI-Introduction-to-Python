@@ -3,8 +3,8 @@
     Arguments:
         wx {[type]} -- [description]
 """
-
-import wx
+from wx.core import *
+#import wx
 
 
 class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
