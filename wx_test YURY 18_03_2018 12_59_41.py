@@ -29,12 +29,8 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         self.menu_bar = wx.MenuBar()
         first_menu = wx.Menu()
         # second_menu = wx.Menu()
-        first_menu.Append(
-            wx.NewId(),
-            "Service", "This will start new postal service transaction.")
-        first_menu.Append(
-            wx.NewId(),
-            "Admin", "This will start admin functions.")
+        first_menu.Append(wx.NewId(), "Service", "This will start new postal service transaction.")
+        first_menu.Append(wx.NewId(), "Admin", "This will start admin functions.")
         self.menu_bar.Append(first_menu, "Function")
         # self.menu_bar.Append(second_menu, "Edit")
         list_choices = ['Arab Emirates',
@@ -116,19 +112,17 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
                         'Vanuatu',
                         'Vietnam']
         self.country_choice = wx.Choice(
-            my_panel, id=wx.ID_ANY, size=wx.DefaultSize, choices=list_choices,
-            style=0, pos=(20, 120))  # , validator=DefaultValidator, name=ChoiceNameStr
-        self.current_country = self.country_choice.GetString(
-            self.country_choice.GetSelection())
+            my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
+            choices=list_choices, style=0, pos = (20, 120))  # , validator=DefaultValidator, name=ChoiceNameStr
+        self.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
 
-        self.my_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.weight_label = wx.StaticText(
-            my_panel, id=wx.ID_ANY, label="Enter item weight:")
-        self.my_boxsizer.Add(self.weight_label, 0)
-        self.weight_entry = wx.TextCtrl(my_panel)
-        self.weight_entry.SetMaxLength(7)
-        self.my_boxsizer.Add(self.weight_entry, 10, wx.ALIGN_RIGHT, 5)
-        my_panel.SetSizer(self.my_boxsizer)
+
+        my_boxsizer = wx.BoxSizer(wx.VERTICAL)
+        weight_label = wx.StaticText(my_panel, id=wx.ID_ANY, label="Enter item weight:")
+        my_boxsizer.Add(weight_label, 1, wx.EXPAND|wx.ALIGN_LEFT|wx.ALL, 5) 
+        # self.weight_entry = wx.TextCtrl(my_panel)
+        # my_boxsizer.Add(self.weight_entry, 1, wx.EXPAND|wx.ALIGN_RIGHT|wx.ALL, 5)
+        
         self.SetMenuBar(self.menu_bar)
 
     def close_button(self, event):  # pylint: disable=W0613
@@ -137,8 +131,7 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         Arguments:
             event {[type]} -- [description]
         """
-        self.current_country = self.country_choice.GetString(
-            self.country_choice.GetSelection())
+        self.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
         print(self.current_country)
         self.Close(True)
 
