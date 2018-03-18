@@ -50,7 +50,7 @@ class Application():
             service = Service(
                 each_service, self.data_base_directory,
                 self.service_name_collection.get(each_service))
-            service.application =  self
+            service.application = self
             self.services_collection.append(service)
 
     def get_available_options(self):
@@ -267,7 +267,7 @@ class Service:
         """[summary]
         """
 
-        pass
+        return self.name
 
     def get_all_countries(self):
         """[summary]
