@@ -13,6 +13,13 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         wx {[type]} -- [description]
     """
 
+    def handle_keypress(self, event):
+        keycode = event.GetKeyCode()
+        if keycode < 255: # valid ASCII
+            if chr(keycode).isdigit(): # Valid alphanumeric character
+                event.Skip()
+
+    
     def __init__(self, parent, id):                # pylint: disable=W0622
 
         self.current_country = ""
@@ -118,7 +125,9 @@ class MyApp(wx.Frame):      # pylint: disable=too-many-ancestors
         self.weight_label = wx.StaticText(my_panel, id=wx.ID_ANY, label="Enter item weight:                ")
         self.my_weight_boxsizer.Add(self.weight_label, 0, wx.ALIGN_LEFT, border=3)
         self.weight_entry = wx.TextCtrl(my_panel)
-        self.weight_entry.SetMaxLength(7)
+        self.weight_entry.SetMaxLength(5)
+        self.weight_entry.Bind(wx.EVT_CHAR, self.handle_keypress)
+
         self.my_weight_boxsizer.Add(self.weight_entry, 0, wx.ALIGN_RIGHT, 20)
         self.my_weigh_unit_selector = wx.RadioBox(my_panel, id=wx.ID_ANY, label="select weight unit", choices=["Kg", "gr"], majorDimension=0, style=wx.RA_SPECIFY_COLS)
         self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_RIGHT, 20)

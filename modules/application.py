@@ -4,16 +4,14 @@ Returns:
     [type] -- [description]
 """
 
-import re
-import pandas as pd
-
 from modules.service import Service
+
 
 class Application:
     """[summary]
     """
 
-    def __init__(self, name, data_dir, file_name):
+    def __init__(self, name, data_dir, file_name, history):
         """[summary]
 
         Arguments:
@@ -29,25 +27,25 @@ class Application:
         self.weight = 0
         self.country_and_zone_data = {}
         self.country_file = file_name
+        self.sales_history_file = history
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
+
+        self.__register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
+        self.__register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
+        self.__register_service('Economy Parcel by Sea', 'Economy Parcel Price Guide_by Sea ($).csv')
+        self.__register_service('Express Letter', 'Express Letter Price Guide ($).csv')
+        self.__register_service('Express Parcel', 'Express Parcel Price Guide ($).csv')
+        self.__register_service('Standard Parcel', 'Standard Parcel Price Guide ($).csv')
+
+
+        self.__instantiate_service()
 
     def __enter__(self):
         """[summary]
         Returns:
             [type] -- [description]
         """
-        self.register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
-        self.register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
-        self.register_service('Economy Parcel by Sea', 'Economy Parcel Price Guide_by Sea ($).csv')
-        self.register_service('Express Letter', 'Express Letter Price Guide ($).csv')
-        self.register_service('Express Parcel', 'Express Parcel Price Guide ($).csv')
-        self.register_service('Standard Parcel', 'Standard Parcel Price Guide ($).csv')
-
-
-        self.instantiate_service()
-
-
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -60,7 +58,7 @@ class Application:
 
         pass
 
-    def register_service(self, service_name, data_file):
+    def __register_service(self, service_name, data_file):
         """[summary]
 
         Arguments:
@@ -70,7 +68,7 @@ class Application:
 
         self.service_name_collection[service_name] = data_file
 
-    def instantiate_service(self):
+    def __instantiate_service(self):
         """[summary]
         """
 
@@ -108,4 +106,3 @@ class Application:
                 self.country_file))
             exit(404)
         return return_dictionary
-
