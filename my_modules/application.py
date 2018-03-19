@@ -3,8 +3,8 @@
 Returns:
     [type] -- [description]
 """
-
-from modules.service import Service
+import pandas as pd
+from my_modules.service import Service
 
 
 class Application:
@@ -28,6 +28,7 @@ class Application:
         self.country_and_zone_data = {}
         self.country_file = file_name
         self.sales_history_file = history
+        self.sales_history = []
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
 
@@ -40,6 +41,22 @@ class Application:
 
 
         self.__instantiate_service()
+        self.sales_history = self.__import_sales_history()
+
+    def __import_sales_history(self):
+        """
+
+        """
+        try:
+            return_frame = pd.read_csv(
+                self.data_base_directory + self.sales_history_file, header=0, index_col=0,
+                squeeze=True)
+        except FileNotFoundError:
+            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
+                self.sales_history_file))
+            exit(404)
+        return return_frame
+
 
     def __enter__(self):
         """[summary]
