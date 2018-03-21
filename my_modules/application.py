@@ -29,6 +29,7 @@ class Application:
         self.country_file = file_name
         self.sales_history_file = history
         self.sales_history = []
+        self.single_row = False
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
 
@@ -42,6 +43,17 @@ class Application:
 
         self.__instantiate_service()
         self.sales_history = self.__import_sales_history()
+
+    def get_sales_history(self, sales_number):
+        return_iterable = []
+        if self.sales_history.loc[sales_number].values.ndim > 1:
+            self.single_row = True
+            for each_value in self.sales_history.loc[sales_number].values:
+                return_iterable.append(each_value)
+        else:
+            self.single_row = False
+            return_iterable = self.sales_history.loc[sales_number].values
+        return return_iterable
 
     def __import_sales_history(self):
         """

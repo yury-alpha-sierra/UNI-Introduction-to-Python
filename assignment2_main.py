@@ -1,30 +1,27 @@
 """[summary]
 
 """
-
-
+from pandas import DataFrame
 from my_modules import Application
-
-sales_history = []
-
-
-def get_sales_history(sales_number):
-    return_iterable = []
-    for each_value in POSTAGE_SERVICE.sales_history.loc[sales_number].values:
-        return_iterable.append(each_value)
-
-    return return_iterable
 
 
 POSTAGE_SERVICE = Application('Postage Service', './/data//', 'Countries and Zones.csv', 'sales_history.csv')
 POSTAGE_SERVICE.country = 'China'
 POSTAGE_SERVICE.weight = 1132
 
-# with POSTAGE_SERVICE as p:
-#     p.get_available_serice_price_options()
-sales_num = 201
-s_history = get_sales_history(sales_num)
+sales_num = 2022
+s_history = ()
 
-for each_item in s_history:
-    date_time, type, weight, destination, postage_method, quantity, cost = each_item
-    print('{}  {}  {}  {}  {}  {}  {}  {}'.format(sales_num, date_time, type, weight, destination, postage_method, quantity, cost))
+
+with POSTAGE_SERVICE as p:
+    p.get_available_serice_price_options()
+    s_history = p.get_sales_history(sales_num)
+
+
+    if POSTAGE_SERVICE.single_row:
+        for each_item in s_history:
+            date_time, type, weight, destination, postage_method, quantity, cost = each_item
+            print('{}  {}  {}  {}  {}  {}  {}  {}'.format(sales_num, date_time, type, weight, destination, postage_method, quantity, cost))
+    else:
+        date_time, type, weight, destination, postage_method, quantity, cost = s_history
+        print('{}  {}  {}  {}  {}  {}  {}  {}'.format(sales_num, date_time, type, weight, destination, postage_method, quantity, cost))
