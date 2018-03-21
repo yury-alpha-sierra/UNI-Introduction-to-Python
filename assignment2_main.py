@@ -1,7 +1,6 @@
 """[summary]
 
 """
-from pandas import DataFrame
 from my_modules import Application
 
 
@@ -9,7 +8,7 @@ POSTAGE_SERVICE = Application('Postage Service', './/data//', 'Countries and Zon
 POSTAGE_SERVICE.country = 'China'
 POSTAGE_SERVICE.weight = 1132
 
-sales_num = 2022
+sales_num = 2045
 s_history = ()
 
 
