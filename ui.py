@@ -117,14 +117,14 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.my_weight_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.weight_label = wx.StaticText(self.my_panel, id=wx.ID_ANY, label="  Enter item weight:                ")
-        self.my_weight_boxsizer.Add(self.weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL , border=15)
+        self.my_weight_boxsizer.Add(self.weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=15)
         self.weight_entry = wx.TextCtrl(self.my_panel)
         self.weight_entry.SetMaxLength(5)
         self.weight_entry.Bind(wx.EVT_CHAR, self.handle_keypress)
 
         self.my_weight_boxsizer.Add(self.weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
-        self.my_weigh_unit_selector = wx.RadioBox(self.my_panel, id=wx.ID_ANY, choices=["Kg", "gr"], majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)  #, label="select weight unit"
-        self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0,  wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL , border =10)
+        self.my_weigh_unit_selector = wx.RadioBox(self.my_panel, id=wx.ID_ANY, choices=["Kg", "gr"], majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+        self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.country_label = wx.StaticText(self.my_panel, id=wx.ID_ANY, label="  Select destination country: ")
