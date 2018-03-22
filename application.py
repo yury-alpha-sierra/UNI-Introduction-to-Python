@@ -22,11 +22,12 @@ class Application:
         self.data_base_directory = data_dir
         self.country_file = file_name
         self.sales_history_file = history
-        self.country_and_zone_data = {} # updated by __register_service  contains service names
-        self.service_name_collection = {} # updated by __instantiate_service()contains list of service instances
+        # updated by __register_service  contains service names
+        self.country_and_zone_data = {}
+        # updated by __instantiate_service()contains list of service instances
+        self.service_name_collection = {}
         self.services_collection = []
         self.sales_history = []
-
 
         self.__initialise_volotile()
 
@@ -51,8 +52,8 @@ class Application:
         self.__instantiate_service()
 
         POSTAGE_SERVICE_UI = wx.App()
-        FRAME = Ui(self.name, parent=None, id=-1)
-        FRAME.app = self
+        FRAME = Ui(self.name, parent=None, id=-1, app=self)
+
         FRAME.Centre()
         FRAME.Show()
         POSTAGE_SERVICE_UI.MainLoop()
