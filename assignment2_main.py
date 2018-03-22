@@ -1,7 +1,7 @@
 """[summary]
 
 """
-from my_modules import Application
+from my_modules.application import Application
 
 
 

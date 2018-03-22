@@ -2,8 +2,8 @@
 """
 import pandas as pd
 
-from ui import Ui
-from service import Service
+from my_modules.ui import Ui
+from my_modules.service import Service
 
 
 class Application:
@@ -17,18 +17,16 @@ class Application:
             name {[type]} -- [description]
             data_dir {[type]} -- [description]
         """
-
         self.name = name
-        self.services_collection = []
-        self.service_name_collection = {}
         self.data_base_directory = data_dir
-        self.country = ''
-        self.weight = 0
-        self.country_and_zone_data = {}
         self.country_file = file_name
         self.sales_history_file = history
+        self.country_and_zone_data = {}
+        self.service_name_collection = {} #updated by __register_service  contains service names
+        self.services_collection = [] #updated by __instantiate_service()contains list of service instances
         self.sales_history = []
-        self.single_row = False
+
+        self.__initialise_volotile()
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
         self.sales_history = self.__import_sales_history()
@@ -42,6 +40,11 @@ class Application:
 
         self.__instantiate_service()
 
+    def __initialise_volotile(self):
+
+        self.country = ''
+        self.weight = 0
+        self.single_row = False
 
     def get_sales_history_by_sales_number(self, sales_number):
         return_iterable = []
@@ -117,8 +120,6 @@ class Application:
     def __import_country_and_zone_data(self):
         """[summary]
 
-        Returns:
-            [type] -- [description]
         """
 
         return_dictionary = {}
