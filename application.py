@@ -1,9 +1,10 @@
 """[summary]
 """
 import pandas as pd
+import wx
 
-from my_modules.ui import Ui
-from my_modules.service import Service
+from ui import Ui
+from service import Service
 
 
 class Application:
@@ -21,24 +22,40 @@ class Application:
         self.data_base_directory = data_dir
         self.country_file = file_name
         self.sales_history_file = history
-        self.country_and_zone_data = {}
-        self.service_name_collection = {} #updated by __register_service  contains service names
-        self.services_collection = [] #updated by __instantiate_service()contains list of service instances
+        self.country_and_zone_data = {} # updated by __register_service  contains service names
+        self.service_name_collection = {} # updated by __instantiate_service()contains list of service instances
+        self.services_collection = []
         self.sales_history = []
+
 
         self.__initialise_volotile()
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
         self.sales_history = self.__import_sales_history()
 
-        self.__register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
-        self.__register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
-        self.__register_service('Economy Parcel by Sea', 'Economy Parcel Price Guide_by Sea ($).csv')
-        self.__register_service('Express Letter', 'Express Letter Price Guide ($).csv')
-        self.__register_service('Express Parcel', 'Express Parcel Price Guide ($).csv')
-        self.__register_service('Standard Parcel', 'Standard Parcel Price Guide ($).csv')
+        self.__register_service(
+            'Economy Letter', 'Economy Letters Price Guide ($).csv')
+        self.__register_service(
+            'Economy Parcel by Air',
+            'Economy Parcel Price Guide_by Air ($).csv')
+        self.__register_service(
+            'Economy Parcel by Sea',
+            'Economy Parcel Price Guide_by Sea ($).csv')
+        self.__register_service(
+            'Express Letter', 'Express Letter Price Guide ($).csv')
+        self.__register_service(
+            'Express Parcel', 'Express Parcel Price Guide ($).csv')
+        self.__register_service(
+            'Standard Parcel', 'Standard Parcel Price Guide ($).csv')
 
         self.__instantiate_service()
+
+        POSTAGE_SERVICE_UI = wx.App()
+        FRAME = Ui(self.name, parent=None, id=-1)
+        FRAME.app = self
+        FRAME.Centre()
+        FRAME.Show()
+        POSTAGE_SERVICE_UI.MainLoop()
 
     def __initialise_volotile(self):
 
@@ -63,8 +80,8 @@ class Application:
         """
         try:
             return_frame = pd.read_csv(
-                self.data_base_directory + self.sales_history_file, header=0, index_col=0,
-                squeeze=True)
+                self.data_base_directory + self.sales_history_file, header=0,
+                index_col=0, squeeze=True)
         except FileNotFoundError:
             print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
                 self.sales_history_file))
@@ -112,10 +129,14 @@ class Application:
     def get_available_serice_price_options(self):
         """[summary]
         """
-
+        l = []
         for each_service in self.services_collection:
-            print('{} --> {}'.format(each_service.get_service_name(),
-                                     each_service.get_service_price(self.country, self.weight)))
+            nm = each_service.get_service_name()
+            pr = each_service.get_service_price(self.country, self.weight)
+            if pr:
+                l.append([nm, pr])
+                # print('{} --> {}'.format(nm,pr))
+        return l
 
     def __import_country_and_zone_data(self):
         """[summary]
