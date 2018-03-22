@@ -8,12 +8,6 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     """[summary]
 
     """
-    # def __new__(cls, *args, **kwargs):
-    #     # super(Ui, cls).__new__(cls)
-    #     obj = wx.Frame.__new__(typ, *args, **kwargs)
-    #     Ui.app = None
-    #     return obj
-
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.current_country = ""
@@ -64,8 +58,9 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_panel, id=wx.ID_ANY, label="  Select destination country: ")
         self.my_country_boxsizer.Add(self.country_label, 0, border=30)
         self.country_choice = wx.Choice(
-            self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize, choices=list(self.app.country_and_zone_data.keys()),
-            style=0)  # , validator=DefaultValidator, name=ChoiceNameStr
+            self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
+            choices=list(self.app.country_and_zone_data.keys()),
+            style=0)
         self.my_country_boxsizer.Add(self.country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -85,7 +80,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_buttons_boxsizer.Add(
-            self.my_add_button, 10,  wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
+            self.my_add_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
         self.my_buttons_boxsizer.Add(
             self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
@@ -115,7 +110,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         self.my_panel.Hide()
 
-    def add_button(self, event): # pylint: disable=W0613
+    def add_button(self, event):  # pylint: disable=W0613
         """[summary]
 
         """
@@ -134,4 +129,3 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
 
         self.Destroy()
-
