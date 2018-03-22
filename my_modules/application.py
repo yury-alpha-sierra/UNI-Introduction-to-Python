@@ -1,10 +1,9 @@
 """[summary]
-
-Returns:
-    [type] -- [description]
 """
 import pandas as pd
-from my_modules.service import Service
+
+from ui import Ui
+from service import Service
 
 
 class Application:
@@ -32,6 +31,7 @@ class Application:
         self.single_row = False
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
+        self.sales_history = self.__import_sales_history()
 
         self.__register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
         self.__register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
@@ -40,18 +40,17 @@ class Application:
         self.__register_service('Express Parcel', 'Express Parcel Price Guide ($).csv')
         self.__register_service('Standard Parcel', 'Standard Parcel Price Guide ($).csv')
 
-
         self.__instantiate_service()
-        self.sales_history = self.__import_sales_history()
 
-    def get_sales_history(self, sales_number):
+
+    def get_sales_history_by_sales_number(self, sales_number):
         return_iterable = []
         if self.sales_history.loc[sales_number].values.ndim > 1:
-            self.single_row = True
+            self.single_row = False
             for each_value in self.sales_history.loc[sales_number].values:
                 return_iterable.append(each_value)
         else:
-            self.single_row = False
+            self.single_row = True
             return_iterable = self.sales_history.loc[sales_number].values
         return return_iterable
 
@@ -68,7 +67,6 @@ class Application:
                 self.sales_history_file))
             exit(404)
         return return_frame
-
 
     def __enter__(self):
         """[summary]

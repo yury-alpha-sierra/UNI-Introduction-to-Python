@@ -76,9 +76,6 @@ class Service:
 
         Arguments:
             zone {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
         """
 
         zone_pattern = re.compile(r'(' + str(zone) + ')')
@@ -96,9 +93,6 @@ class Service:
         Arguments:
             dictionary {[type]} -- [description]
             weight {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
         """
 
         i = None
