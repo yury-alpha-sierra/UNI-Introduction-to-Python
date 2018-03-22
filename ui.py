@@ -8,6 +8,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     """[summary]
 
     """
+
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.current_country = ""
@@ -50,6 +51,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_weigh_unit_selector = wx.RadioBox(
             self.my_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
             majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+        self.my_weigh_unit_selector.SetSelection(1)
         self.my_weight_boxsizer.Add(
             self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
@@ -65,8 +67,10 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_item_list = wx.ListCtrl(
-            self.my_panel, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[500, 200],
-            style=wx.LC_ICON)
+            self.my_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
+            pos=wx.DefaultPosition, size=[500, 200])
+        self.my_item_list.AppendColumn('method', width=100)
+        self.my_item_list.AppendColumn('price', width=100)
         self.my_item_list_boxsizer.Add(
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
@@ -101,7 +105,8 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     def handle_keypress(self, event):
         keycode = event.GetKeyCode()
         if keycode < 255:  # valid ASCII
-            if chr(keycode).isdigit():  # Valid alphanumeric character
+            # Valid alphanumeric character + backspace, left and right arrow
+            if chr(keycode).isdigit() or keycode == 8 or keycode == 37 or keycode == 39:
                 event.Skip()
 
     def next_button(self, event):  # pylint: disable=W0613
@@ -116,12 +121,24 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         self.current_country = self.country_choice.GetString(
             self.country_choice.GetSelection())
-        self.status_bar.SetStatusText(self.weight_entry.GetValue(), 0)
+        self.app.country = self.current_country
+        self.current_weight = self.weight_entry.GetValue()
+
+        self.status_bar.SetStatusText(self.current_weight, 0)
+
         self.status_bar.SetStatusText(self.current_country, 1)
         if self.my_weigh_unit_selector.GetSelection() == 0:
             self.status_bar.SetStatusText('Kg', 2)
+            multiplier = 1000
         else:
             self.status_bar.SetStatusText('gr', 2)
+            multiplier = 1
+
+        self.app.weight = float(self.current_weight) * multiplier
+        self.my_item_list.DeleteAllItems()
+        l = self.app.get_available_serice_price_options()
+        for each_item in l:
+            self.my_item_list.Append(each_item)
 
     def close_window(self, event):  # pylint: disable=W0613
         """[summary]
