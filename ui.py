@@ -69,7 +69,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_item_list = wx.ListCtrl(
             self.my_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
             pos=wx.DefaultPosition, size=[500, 200])
-        self.my_item_list.AppendColumn('method', width=100)
+        self.my_item_list.AppendColumn('method', width=200)
         self.my_item_list.AppendColumn('price', width=100)
         self.my_item_list_boxsizer.Add(
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
