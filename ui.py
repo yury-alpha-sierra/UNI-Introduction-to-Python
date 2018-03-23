@@ -12,7 +12,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.current_country = ""
-        self.app = app
+        self.application = app
         wx.Frame.__init__(self, parent, id, name, size=(600, 400))
 
         self.Bind(wx.EVT_CLOSE, self.close_window)
@@ -61,7 +61,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_country_boxsizer.Add(self.country_label, 0, border=30)
         self.country_choice = wx.Choice(
             self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
-            choices=list(self.app.country_and_zone_data.keys()),
+            choices=list(self.application.country_and_zone_data.keys()),
             style=0)
         self.my_country_boxsizer.Add(self.country_choice, 0, border=3)
 
@@ -121,7 +121,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         self.current_country = self.country_choice.GetString(
             self.country_choice.GetSelection())
-        self.app.country = self.current_country
+        self.application.country = self.current_country
         self.current_weight = self.weight_entry.GetValue()
 
         self.status_bar.SetStatusText(self.current_weight, 0)
@@ -134,9 +134,9 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.status_bar.SetStatusText('gr', 2)
             multiplier = 1
 
-        self.app.weight = float(self.current_weight) * multiplier
+        self.application.weight = float(self.current_weight) * float(multiplier)
         self.my_item_list.DeleteAllItems()
-        l = self.app.get_available_serice_price_options()
+        l = self.application.get_available_serice_price_options()
         for each_item in l:
             self.my_item_list.Append(each_item)
 
@@ -144,5 +144,4 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """[summary]
 
         """
-
         self.Destroy()

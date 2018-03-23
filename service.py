@@ -12,8 +12,7 @@ import pandas as pd
 class Service:
     """[summary]
 
-    Returns:
-        [type] -- [description]
+
     """
 
     def __init__(self, name, data_dir, data_file):
@@ -138,8 +137,7 @@ class Service:
             [type] -- [description]
         """
 
-        zone = self.get_zone_info_from_country(
-            self.application.country_and_zone_data, country)
+        zone = self.get_zone_info_from_country(country)
         try:
             zone_label = self.get_zone_label(zone)
             weight_label = self.get_weight_label(weight)
@@ -148,40 +146,21 @@ class Service:
         except(ValueError, AttributeError, TypeError):
             return None
 
-    def is_servicable_country(self, dictionary, country_name):  # pylint: disable=R0201
+    def get_zone_info_from_country(self, country):  # pylint: disable=R1710
         """[summary]
 
         Arguments:
             dictionary {[type]} -- [description]
             country_name {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
         """
-
-        if country_name in dictionary:
-            return True
-        return False
-
-    def get_zone_info_from_country(self, dictionary, country_name):  # pylint: disable=R1710
-        """[summary]
-
-        Arguments:
-            dictionary {[type]} -- [description]
-            country_name {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        if self.is_servicable_country(dictionary, country_name):
-            result = dictionary.get(country_name)
+        if country in self.application.country_and_zone_data:
+            result = self.application.country_and_zone_data.get(country)
             number_pattern = re.compile(r'\d{1}')
             matches = re.findall(number_pattern, result)
             if matches:
                 return matches[0]
-        else:
-            return None
+            else:
+                return None
 
     def get_service_name(self):
         """[summary]
