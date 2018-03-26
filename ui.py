@@ -1,5 +1,4 @@
 """[summary]
-
 """
 import wx  # pylint: disable=E0611,W0401
 

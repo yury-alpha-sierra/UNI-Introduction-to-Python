@@ -1,17 +1,12 @@
 """[summary]
 
-Returns:
-    [type] -- [description]
 """
-
-
 import re
 import pandas as pd
 
 
 class Service:
     """[summary]
-
 
     """
 
