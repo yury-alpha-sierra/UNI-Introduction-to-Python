@@ -28,6 +28,7 @@ class Application:
         self.service_name_collection = {}
         self.services_collection = []
         self.sales_history = []
+        self.available_serice_price_options = []
 
         self.__initialise_volotile()
 

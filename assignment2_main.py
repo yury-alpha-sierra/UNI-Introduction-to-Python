@@ -1,5 +1,4 @@
 """[summary]
-
 """
 from application import Application
 
