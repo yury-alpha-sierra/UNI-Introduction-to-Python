@@ -95,13 +95,13 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_busket_item_list = wx.ListCtrl(
             self.my_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
             pos=wx.DefaultPosition, size=[900, 150])
-        self.my_busket_item_list.AppendColumn('item no', width=80)
-        self.my_busket_item_list.AppendColumn('type', width=100)
-        self.my_busket_item_list.AppendColumn('method', width=100)
-        self.my_busket_item_list.AppendColumn('weight', width=100)
-        self.my_busket_item_list.AppendColumn('destination', width=250)
-        self.my_busket_item_list.AppendColumn('quantity', width=100)
-        self.my_busket_item_list.AppendColumn('cost', width=100)
+        self.my_busket_item_list.AppendColumn('item no', width=60)
+        self.my_busket_item_list.AppendColumn('type', width=70)
+        self.my_busket_item_list.AppendColumn('method', width=90)
+        self.my_busket_item_list.AppendColumn('weight', width=70)
+        self.my_busket_item_list.AppendColumn('destination', width=350)
+        self.my_busket_item_list.AppendColumn('quantity', width=80)
+        self.my_busket_item_list.AppendColumn('cost', width=80)
         self.my_busket_item_list.AppendColumn('each', width=100)
 
         self.my_busket_boxsizer.Add(
@@ -128,15 +128,25 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         index = self.my_item_list.GetFirstSelected()
         item_no = len(self.application.invoice) + 1
-        to_basket = [str(item_no), 'type', 'method', 'weight', 'destination', 'quantity', 'cost', 'each']
-        # self.application.available_serice_price_options[index]
+
+        my_type_str, my_price = self.application.available_serice_price_options[index]
+        my_type_split = my_type_str.split(' ')
+        my_method = my_type_split[0].upper()
+        my_type = my_type_split[1]
+        my_price = '${0:.2f}'.format(my_price)
+        my_weight = '{0:.2f}'.format(self.application.weight)
+        to_basket = [str(item_no), my_type, my_method, my_weight, self.current_country, 'quantity', 'cost', my_price]
         self.application.invoice.append(to_basket)
-        # print(self.application.invoice)
+
+
         self.my_item_list.DeleteAllItems()
-        # print('item {0}, {1}'.format(l[0], l[1]))
         self.my_busket_item_list.DeleteAllItems()
+
         for each_item in self.application.invoice:
             self.my_busket_item_list.Append(each_item)
+
+        # print(self.application.invoice)
+
 
     def handle_keypress(self, event):
         """[summary]
