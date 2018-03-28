@@ -128,7 +128,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         index = self.my_item_list.GetFirstSelected()
         item_no = len(self.application.invoice) + 1
-        to_basket = [str(item_no),'type','method','weight','destination','quantity','cost','each']
+        to_basket = [str(item_no), 'type', 'method', 'weight', 'destination', 'quantity', 'cost', 'each']
         # self.application.available_serice_price_options[index]
         self.application.invoice.append(to_basket)
         # print(self.application.invoice)
