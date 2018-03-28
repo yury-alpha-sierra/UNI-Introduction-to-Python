@@ -64,6 +64,8 @@ class Application:
         self.country = ''
         self.weight = 0
         self.single_row = False
+        self.available_serice_price_options = []
+        self.invoice = []
 
     def get_sales_history_by_sales_number(self, sales_number):
         return_iterable = []

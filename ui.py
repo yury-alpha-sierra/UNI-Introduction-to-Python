@@ -12,6 +12,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.current_country = ""
         self.application = app
+
         wx.Frame.__init__(self, parent, id, name, size=(1000, 550))
 
         self.Bind(wx.EVT_CLOSE, self.close_window)
@@ -126,10 +127,16 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """[summary]
         """
         index = self.my_item_list.GetFirstSelected()
-
-        l = self.application.available_serice_price_options[index]
-
-        print('item {0}, {1}'.format(l[0], l[1]))
+        item_no = len(self.application.invoice) + 1
+        to_basket = [str(item_no),'type','method','weight','destination','quantity','cost','each']
+        # self.application.available_serice_price_options[index]
+        self.application.invoice.append(to_basket)
+        # print(self.application.invoice)
+        self.my_item_list.DeleteAllItems()
+        # print('item {0}, {1}'.format(l[0], l[1]))
+        self.my_busket_item_list.DeleteAllItems()
+        for each_item in self.application.invoice:
+            self.my_busket_item_list.Append(each_item)
 
     def handle_keypress(self, event):
         """[summary]
