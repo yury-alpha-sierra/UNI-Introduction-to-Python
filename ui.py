@@ -63,6 +63,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
             choices=list(self.application.country_and_zone_data.keys()),
             style=0)
+        self.country_choice.Bind(wx.EVT_CHOICE, self.country_choice_on_choice)
         self.my_country_boxsizer.Add(self.country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -81,13 +82,8 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_panel, label='next >>', pos=(430, 280))
         self.Bind(wx.EVT_BUTTON, self.next_button, self.my_next_button)
 
-        self.my_add_button = wx.Button(
-            self.my_panel, label='get options')
-        self.Bind(wx.EVT_BUTTON, self.add_button, self.my_add_button)
-
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_buttons_boxsizer.Add(
-            self.my_add_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
+
         self.my_buttons_boxsizer.Add(
             self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
@@ -145,8 +141,6 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         for each_item in self.application.invoice:
             self.my_busket_item_list.Append(each_item)
 
-        # print(self.application.invoice)
-
 
     def handle_keypress(self, event):
         """[summary]
@@ -162,7 +156,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         self.my_panel.Hide()
 
-    def add_button(self, event):  # pylint: disable=W0613
+    def country_choice_on_choice(self, event):  # pylint: disable=W0613
         """[summary]
         """
         self.current_country = self.country_choice.GetString(
