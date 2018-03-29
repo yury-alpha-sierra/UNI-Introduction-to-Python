@@ -125,22 +125,22 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         index = self.my_item_list.GetFirstSelected()
         item_no = len(self.application.invoice) + 1
 
-        my_type_str, my_price = self.application.available_serice_price_options[index]
+        my_type_str, my_price = self.application.available_serice_price_options[
+            index]
         my_type_split = my_type_str.split(' ')
         my_method = my_type_split[0].upper()
         my_type = my_type_split[1]
         my_price = '${0:.2f}'.format(my_price)
-        my_weight = '{0:.2f}'.format(self.application.weight)
-        to_basket = [str(item_no), my_type, my_method, my_weight, self.current_country, 'quantity', 'cost', my_price]
+        my_weight = '{0:.2f}'.format(self.application.current_weight)
+        to_basket = [str(item_no), my_type, my_method, my_weight,
+                     self.current_country, 'quantity', 'cost', my_price]
         self.application.invoice.append(to_basket)
-
 
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
         for each_item in self.application.invoice:
             self.my_busket_item_list.Append(each_item)
-
 
     def handle_keypress(self, event):
         """[summary]
@@ -162,24 +162,27 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.current_country = self.country_choice.GetString(
             self.country_choice.GetSelection())
         self.application.country = self.current_country
-        self.current_weight = self.weight_entry.GetValue()
+        self.application.current_weight = self.weight_entry.GetValue()
 
-        self.status_bar.SetStatusText(self.current_weight, 0)
+        # self.status_bar.SetStatusText(self.current_weight, 0)
 
-        self.status_bar.SetStatusText(self.current_country, 1)
+        # self.status_bar.SetStatusText(self.current_country, 1)
         if self.my_weigh_unit_selector.GetSelection() == 0:
-            self.status_bar.SetStatusText('Kg', 2)
+            # self.status_bar.SetStatusText('Kg', 2)
             multiplier = 1000
         else:
-            self.status_bar.SetStatusText('gr', 2)
+            # self.status_bar.SetStatusText('gr', 2)
             multiplier = 1
 
-        self.application.weight = float(self.current_weight) * float(multiplier)
-        self.my_item_list.DeleteAllItems()
-        self.application.available_serice_price_options.clear()
-        self.application.available_serice_price_options = self.application.get_available_serice_price_options()
-        for each_item in self.application.available_serice_price_options:
-            self.my_item_list.Append(each_item)
+        if not self.application.current_weight == '':
+        # self.status_bar.SetStatusText(self.current_weight, 0)
+            self.application.current_weight = float(self.application.current_weight) * float(multiplier)
+            self.my_item_list.DeleteAllItems()
+
+            self.application.available_serice_price_options.clear()
+            self.application.available_serice_price_options = self.application.get_available_serice_price_options()
+            for each_item in self.application.available_serice_price_options:
+                self.my_item_list.Append(each_item)
 
     def close_window(self, event):  # pylint: disable=W0613
         """[summary]

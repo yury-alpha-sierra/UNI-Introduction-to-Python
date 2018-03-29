@@ -123,13 +123,6 @@ class Service:
 
     def get_service_price(self, country, weight):
         """[summary]
-
-        Arguments:
-            country {[type]} -- [description]
-            weight {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
         """
 
         zone = self.get_zone_info_from_country(country)
@@ -143,10 +136,6 @@ class Service:
 
     def get_zone_info_from_country(self, country):  # pylint: disable=R1710
         """[summary]
-
-        Arguments:
-            dictionary {[type]} -- [description]
-            country_name {[type]} -- [description]
         """
         if country in self.application.country_and_zone_data:
             result = self.application.country_and_zone_data.get(country)

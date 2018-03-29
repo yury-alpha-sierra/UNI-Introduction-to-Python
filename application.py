@@ -30,7 +30,7 @@ class Application:
         self.sales_history = []
         self.available_serice_price_options = []
 
-        self.__initialise_volotile()
+        self.__initialise_volatile()
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
         self.sales_history = self.__import_sales_history()
@@ -59,10 +59,10 @@ class Application:
         FRAME.Show()
         POSTAGE_SERVICE_UI.MainLoop()
 
-    def __initialise_volotile(self):
+    def __initialise_volatile(self):
 
         self.country = ''
-        self.weight = 0
+        self.current_weight = 0
         self.single_row = False
         self.available_serice_price_options = []
         self.invoice = []
@@ -111,10 +111,6 @@ class Application:
 
     def __register_service(self, service_name, data_file):
         """[summary]
-
-        Arguments:
-            name {[type]} -- [description]
-            file {[type]} -- [description]
         """
 
         self.service_name_collection[service_name] = data_file
@@ -133,14 +129,16 @@ class Application:
     def get_available_serice_price_options(self):
         """[summary]
         """
-        l = []
-        for each_service in self.services_collection:
-            nm = each_service.get_service_name()
-            pr = each_service.get_service_price(self.country, self.weight)
-            if pr:
-                l.append([nm, pr])
-                # print('{} --> {}'.format(nm,pr))
-        return l
+        if self.current_weight > 0:
+            l = []
+            for each_service in self.services_collection:
+                nm = each_service.get_service_name()
+                pr = each_service.get_service_price(self.country, self.current_weight)
+                if pr:
+                    l.append([nm, pr])
+                    # print('{} --> {}'.format(nm,pr))
+            return l
+        return None
 
     def __import_country_and_zone_data(self):
         """[summary]
