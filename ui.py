@@ -5,17 +5,17 @@ import wx  # pylint: disable=E0611,W0401
 
 class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     """[summary]
-
     """
 
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.current_country = ""
         self.application = app
+        self.weight_entry_focus = True
 
         wx.Frame.__init__(self, parent, id, name, size=(1000, 550))
 
-        self.Bind(wx.EVT_CLOSE, self.close_window)
+        self.Bind(wx.EVT_CLOSE, self.frame_handle_EVT_CLOSE)
 
         self.my_panel = wx.Panel(self)
 
@@ -44,7 +44,10 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             border=15)
         self.weight_entry = wx.TextCtrl(self.my_panel)
         self.weight_entry.SetMaxLength(5)
-        self.weight_entry.Bind(wx.EVT_CHAR, self.handle_keypress)
+
+        self.weight_entry.Bind(wx.EVT_CHAR, self.weight_entry_handle_EVT_CHAR)
+        # self.weight_entry.Bind(wx.EVT_KILL_FOCUS, self.weight_entry_handle_EVT_KILL_FOCUS)
+        # self.weight_entry.Bind(wx.EVT_SET_FOCUS, self.weight_entry_handle_EVT_SET_FOCUS)
 
         self.my_weight_boxsizer.Add(
             self.weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
@@ -63,7 +66,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
             choices=list(self.application.country_and_zone_data.keys()),
             style=0)
-        self.country_choice.Bind(wx.EVT_CHOICE, self.country_choice_on_choice)
+        self.country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
         self.my_country_boxsizer.Add(self.country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -73,14 +76,14 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_item_list.AppendColumn('method', width=200)
         self.my_item_list.AppendColumn('price', width=100)
 
-        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.double_click)
+        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
 
         self.my_item_list_boxsizer.Add(
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_next_button = wx.Button(
             self.my_panel, label='next >>', pos=(430, 280))
-        self.Bind(wx.EVT_BUTTON, self.next_button, self.my_next_button)
+        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -119,7 +122,22 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.SetMenuBar(self.menu_bar)
 
-    def double_click(self, event):  # pylint: disable=W0613
+    def weight_entry_handle_EVT_KILL_FOCUS(self, event):   # pylint: disable=W0613
+        """[summary]
+        """
+        # self.weight_entry_focus = False
+        t = self.weight_entry.IsModified()
+
+        print('Kill focus --> {}'.format(t))
+        self.country_choice_handle_EVT_CHOICE(event)
+
+    # def weight_entry_handle_EVT_SET_FOCUS(self, event):   # pylint: disable=W0613
+    #     """[summary]
+    #     """
+    #     self.weight_entry_focus = False
+    #     print('Set focus')
+
+    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
         """
         index = self.my_item_list.GetFirstSelected()
@@ -142,7 +160,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         for each_item in self.application.invoice:
             self.my_busket_item_list.Append(each_item)
 
-    def handle_keypress(self, event):
+    def weight_entry_handle_EVT_CHAR(self, event):
         """[summary]
         """
         keycode = event.GetKeyCode()
@@ -151,31 +169,26 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             if chr(keycode).isdigit() or keycode == 8 or keycode == 37 or keycode == 39:
                 event.Skip()
 
-    def next_button(self, event):  # pylint: disable=W0613
+    def my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
         self.my_panel.Hide()
 
-    def country_choice_on_choice(self, event):  # pylint: disable=W0613
+    def country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.current_country = self.country_choice.GetString(
-            self.country_choice.GetSelection())
-        self.application.country = self.current_country
+        # self.current_country = self.country_choice.GetString(
+        #     self.country_choice.GetSelection())
+        self.application.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
         self.application.current_weight = self.weight_entry.GetValue()
 
-        # self.status_bar.SetStatusText(self.current_weight, 0)
-
-        # self.status_bar.SetStatusText(self.current_country, 1)
-        if self.my_weigh_unit_selector.GetSelection() == 0:
-            # self.status_bar.SetStatusText('Kg', 2)
-            multiplier = 1000
-        else:
+        if not ((self.application.current_weight == '') or (self.application.current_country == '')):
+            if self.my_weigh_unit_selector.GetSelection() == 0:
+                # self.status_bar.SetStatusText('Kg', 2)
+                multiplier = 1000
+            else:
             # self.status_bar.SetStatusText('gr', 2)
-            multiplier = 1
-
-        if not self.application.current_weight == '':
-        # self.status_bar.SetStatusText(self.current_weight, 0)
+                multiplier = 1
             self.application.current_weight = float(self.application.current_weight) * float(multiplier)
             self.my_item_list.DeleteAllItems()
 
@@ -184,7 +197,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             for each_item in self.application.available_serice_price_options:
                 self.my_item_list.Append(each_item)
 
-    def close_window(self, event):  # pylint: disable=W0613
+    def frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
         """
         self.Destroy()

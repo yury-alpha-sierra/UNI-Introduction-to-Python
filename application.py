@@ -61,7 +61,7 @@ class Application:
 
     def __initialise_volatile(self):
 
-        self.country = ''
+        self.current_country = ''
         self.current_weight = 0
         self.single_row = False
         self.available_serice_price_options = []
@@ -133,7 +133,7 @@ class Application:
             l = []
             for each_service in self.services_collection:
                 nm = each_service.get_service_name()
-                pr = each_service.get_service_price(self.country, self.current_weight)
+                pr = each_service.get_service_price(self.current_country, self.current_weight)
                 if pr:
                     l.append([nm, pr])
                     # print('{} --> {}'.format(nm,pr))
