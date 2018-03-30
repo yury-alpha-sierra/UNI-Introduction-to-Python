@@ -9,21 +9,19 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
-        self.current_country = ""
         self.application = app
-        self.weight_entry_focus = True
 
         wx.Frame.__init__(self, parent, id, name, size=(1000, 550))
 
-        self.Bind(wx.EVT_CLOSE, self.frame_handle_EVT_CLOSE)
+        self.Bind(wx.EVT_CLOSE, self.my_frame_handle_EVT_CLOSE)
 
-        self.my_panel = wx.Panel(self)
+        self.my_service_panel = wx.Panel(self)
 
-        self.status_bar = self.CreateStatusBar(
+        self.my_status_bar = self.CreateStatusBar(
             4)     # pylint: disable=unused-variable
-        self.status_bar.SetStatusWidths([100, 300, 200, 100])
+        self.my_status_bar.SetStatusWidths([100, 300, 200, 100])
 
-        self.menu_bar = wx.MenuBar()
+        self.my_menu_bar = wx.MenuBar()
         self.my_menu = wx.Menu()
 
         self.my_menu.Append(
@@ -33,25 +31,25 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             wx.NewId(),
             "Admin", "This will start admin functions.")
 
-        self.menu_bar.Append(self.my_menu, "Function")
+        self.my_menu_bar.Append(self.my_menu, "Function")
 
         self.my_weight_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.weight_label = wx.StaticText(
-            self.my_panel, id=wx.ID_ANY,
+        self.my_weight_label = wx.StaticText(
+            self.my_service_panel, id=wx.ID_ANY,
             label="  Enter item weight:                ")
         self.my_weight_boxsizer.Add(
-            self.weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL,
+            self.my_weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL,
             border=15)
-        self.weight_entry = wx.TextCtrl(self.my_panel)
-        self.weight_entry.SetMaxLength(5)
+        self.my_weight_entry = wx.TextCtrl(self.my_service_panel)
+        self.my_weight_entry.SetMaxLength(5)
 
-        self.weight_entry.Bind(wx.EVT_CHAR, self.weight_entry_handle_EVT_CHAR)
-        self.weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
+        self.my_weight_entry.Bind(wx.EVT_CHAR, self.my_weight_entry_handle_EVT_CHAR)
+        self.my_weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
 
         self.my_weight_boxsizer.Add(
-            self.weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
+            self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
         self.my_weigh_unit_selector = wx.RadioBox(
-            self.my_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
+            self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
             majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
         self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
 
@@ -60,19 +58,19 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.country_label = wx.StaticText(
-            self.my_panel, id=wx.ID_ANY, label="  Select destination country: ")
-        self.my_country_boxsizer.Add(self.country_label, 0, border=30)
-        self.country_choice = wx.Choice(
-            self.my_panel, id=wx.ID_ANY, size=wx.DefaultSize,
+        self.my_country_label = wx.StaticText(
+            self.my_service_panel, id=wx.ID_ANY, label="  Select destination country: ")
+        self.my_country_boxsizer.Add(self.my_country_label, 0, border=30)
+        self.my_country_choice = wx.Choice(
+            self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize,
             choices=list(self.application.country_and_zone_data.keys()),
             style=0)
-        self.country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
-        self.my_country_boxsizer.Add(self.country_choice, 0, border=3)
+        self.my_country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
+        self.my_country_boxsizer.Add(self.my_country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_item_list = wx.ListCtrl(
-            self.my_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
+            self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
             pos=wx.DefaultPosition, size=[900, 200])
         self.my_item_list.AppendColumn('method', width=200)
         self.my_item_list.AppendColumn('price', width=100)
@@ -83,7 +81,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_next_button = wx.Button(
-            self.my_panel, label='next >>', pos=(430, 280))
+            self.my_service_panel, label='next >>', pos=(430, 280))
         self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -93,7 +91,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_busket_item_list = wx.ListCtrl(
-            self.my_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
+            self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
             pos=wx.DefaultPosition, size=[900, 150])
         self.my_busket_item_list.AppendColumn('item no', width=60)
         self.my_busket_item_list.AppendColumn('type', width=70)
@@ -119,14 +117,14 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.my_user_input_boxsizer.Add(
             self.my_buttons_boxsizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
 
-        self.my_panel.SetSizer(self.my_user_input_boxsizer)
+        self.my_service_panel.SetSizer(self.my_user_input_boxsizer)
 
-        self.SetMenuBar(self.menu_bar)
+        self.SetMenuBar(self.my_menu_bar)
 
     def  my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event): # pylint: disable=W0613
         """[summary]
         """
-        self.__recalculate_display()
+        self._recalculate_and_update_service_price_options_display()
 
     def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
@@ -142,7 +140,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         my_price = '${0:.2f}'.format(my_price)
         my_weight = '{0:.2f}'.format(self.application.current_weight)
 
-        
+
         if self.my_weigh_unit_selector.GetSelection() == 0:
             suffix = 'Kg'
         else:
@@ -161,9 +159,9 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
     def weight_entry_handle_EVT_CHOICE(self, event): # pylint: disable=W0613
 
-        self.__recalculate_display()
+        self._recalculate_and_update_service_price_options_display()
 
-    def weight_entry_handle_EVT_CHAR(self, event):
+    def my_weight_entry_handle_EVT_CHAR(self, event):
         """[summary]
         """
         keycode = event.GetKeyCode()
@@ -175,17 +173,17 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     def my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.my_panel.Hide()
+        self.my_service_panel.Hide()
 
     def country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.__recalculate_display()
+        self._recalculate_and_update_service_price_options_display()
 
-    def __recalculate_display(self):
+    def _recalculate_and_update_service_price_options_display(self):
 
-        self.application.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
-        self.application.current_weight = self.weight_entry.GetValue()
+        self.application.current_country = self.my_country_choice.GetString(self.my_country_choice.GetSelection())
+        self.application.current_weight = self.my_weight_entry.GetValue()
         self.my_item_list.DeleteAllItems()
         if not ((self.application.current_weight == '') or (self.application.current_country == '')):
             if self.my_weigh_unit_selector.GetSelection() == 0:
@@ -199,7 +197,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
             for each_item in self.application.available_serice_price_options:
                 self.my_item_list.Append(each_item)
 
-    def frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
+    def my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
         """
         self.Destroy()
