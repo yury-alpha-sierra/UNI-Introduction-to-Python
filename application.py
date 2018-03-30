@@ -136,7 +136,6 @@ class Application:
                 pr = each_service.get_service_price(self.current_country, self.current_weight)
                 if pr:
                     l.append([nm, pr])
-                    # print('{} --> {}'.format(nm,pr))
             return l
         return None
 

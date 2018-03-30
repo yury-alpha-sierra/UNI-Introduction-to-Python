@@ -46,14 +46,15 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         self.weight_entry.SetMaxLength(5)
 
         self.weight_entry.Bind(wx.EVT_CHAR, self.weight_entry_handle_EVT_CHAR)
-        # self.weight_entry.Bind(wx.EVT_KILL_FOCUS, self.weight_entry_handle_EVT_KILL_FOCUS)
-        # self.weight_entry.Bind(wx.EVT_SET_FOCUS, self.weight_entry_handle_EVT_SET_FOCUS)
+        self.weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
 
         self.my_weight_boxsizer.Add(
             self.weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
         self.my_weigh_unit_selector = wx.RadioBox(
             self.my_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
             majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+        self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
+
         self.my_weigh_unit_selector.SetSelection(1)
         self.my_weight_boxsizer.Add(
             self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
@@ -122,20 +123,10 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         self.SetMenuBar(self.menu_bar)
 
-    def weight_entry_handle_EVT_KILL_FOCUS(self, event):   # pylint: disable=W0613
+    def  my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event): # pylint: disable=W0613
         """[summary]
         """
-        # self.weight_entry_focus = False
-        t = self.weight_entry.IsModified()
-
-        print('Kill focus --> {}'.format(t))
-        self.country_choice_handle_EVT_CHOICE(event)
-
-    # def weight_entry_handle_EVT_SET_FOCUS(self, event):   # pylint: disable=W0613
-    #     """[summary]
-    #     """
-    #     self.weight_entry_focus = False
-    #     print('Set focus')
+        self.__recalculate_display()
 
     def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
@@ -150,8 +141,16 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         my_type = my_type_split[1]
         my_price = '${0:.2f}'.format(my_price)
         my_weight = '{0:.2f}'.format(self.application.current_weight)
-        to_basket = [str(item_no), my_type, my_method, my_weight,
-                     self.current_country, 'quantity', 'cost', my_price]
+
+        
+        if self.my_weigh_unit_selector.GetSelection() == 0:
+            suffix = 'Kg'
+        else:
+            suffix = 'gr'
+        quantity = 1
+        cost = str(quantity * my_price)
+        to_basket = [str(item_no), my_type, my_method, my_weight + suffix,
+                     self.application.current_country, quantity, cost, my_price]
         self.application.invoice.append(to_basket)
 
         self.my_item_list.DeleteAllItems()
@@ -159,6 +158,10 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
 
         for each_item in self.application.invoice:
             self.my_busket_item_list.Append(each_item)
+
+    def weight_entry_handle_EVT_CHOICE(self, event): # pylint: disable=W0613
+
+        self.__recalculate_display()
 
     def weight_entry_handle_EVT_CHAR(self, event):
         """[summary]
@@ -177,20 +180,19 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
     def country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        # self.current_country = self.country_choice.GetString(
-        #     self.country_choice.GetSelection())
+        self.__recalculate_display()
+
+    def __recalculate_display(self):
+
         self.application.current_country = self.country_choice.GetString(self.country_choice.GetSelection())
         self.application.current_weight = self.weight_entry.GetValue()
-
+        self.my_item_list.DeleteAllItems()
         if not ((self.application.current_weight == '') or (self.application.current_country == '')):
             if self.my_weigh_unit_selector.GetSelection() == 0:
-                # self.status_bar.SetStatusText('Kg', 2)
                 multiplier = 1000
             else:
-            # self.status_bar.SetStatusText('gr', 2)
                 multiplier = 1
             self.application.current_weight = float(self.application.current_weight) * float(multiplier)
-            self.my_item_list.DeleteAllItems()
 
             self.application.available_serice_price_options.clear()
             self.application.available_serice_price_options = self.application.get_available_serice_price_options()
