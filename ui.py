@@ -1,13 +1,13 @@
 """[summary]
 """
 import wx  # pylint: disable=E0611,W0401
+import pandas as pd
 
-
-class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
+class Ui(wx.Frame): # pylint: disable=too-many-ancestors
     """[summary]
     """
 
-    def __init__(self, name, parent, id, app):  # pylint: disable=W0622
+    def __init__(self, name, parent, id, app): # pylint: disable=W0622
 
         self.application = app
 
@@ -126,7 +126,7 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         """
         self._recalculate_and_update_service_price_options_display()
 
-    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
+    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event): # pylint: disable=W0613
         """[summary]
         """
         index = self.my_item_list.GetFirstSelected()
@@ -139,23 +139,49 @@ class Ui(wx.Frame):      # pylint: disable=too-many-ancestors
         my_type = my_type_split[1]
         my_price = '${0:.2f}'.format(my_price)
         my_weight = '{0:.2f}'.format(self.application.current_weight)
+        my_weight = self.application.current_weight
 
 
         if self.my_weigh_unit_selector.GetSelection() == 0:
             suffix = 'Kg'
         else:
             suffix = 'gr'
+
+
         quantity = 1
         cost = str(quantity * my_price)
-        to_basket = [str(item_no), my_type, my_method, my_weight + suffix,
+        to_basket = [str(item_no), my_type, my_method, my_weight,
                      self.application.current_country, quantity, cost, my_price]
         self.application.invoice.append(to_basket)
+
+        old_list = pd.DataFrame(data=self.application.invoice[0:], index=None, columns=['item no', 'type', 'method', 'weight', 'destination', 'quantity', 'cost', 'each'])
+
+        num_of_simmilar_items =  old_list.groupby([ 'weight', 'destination', 'type', 'method']).count() 
+        print(num_of_simmilar_items)
+
 
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
-        for each_item in self.application.invoice:
-            self.my_busket_item_list.Append(each_item)
+        # if not old_list.empty:
+        self.my_busket_item_list.Append(num_of_simmilar_items)
+
+        # else:
+        #     if len(old_list) == 1:
+        #         if (old_list[1] == my_type) and (old_list[2] == my_method) and (old_list[3] == my_weight) and (old_list[4] == self.application.current_country):
+        #             quantity += old_list[5]
+        #     else:
+        #         for each_item_in_old_list in old_list:
+        #             if (each_item_in_old_list[1] == my_type) and (each_item_in_old_list[2] == my_method) and (each_item_in_old_list[3] == my_weight) and (each_item_in_old_list[4] == self.application.current_country):
+        #                 quantity += each_item_in_old_list[5]
+        #             else:
+        #                 self.my_busket_item_list.Append(to_basket)
+        # for each_invoice_item in self.application.invoice:
+        #     for row in range(self.my_busket_item_list.GetItemCount()):
+        #         for col in range(self.my_busket_item_list.GetColumnCount()):
+        #             l.append(self.my_busket_item_list.GetItem(row, col).GetText())
+        #     # self.my_busket_item_list.Append(each_invoice_item)
+        # print(l)
 
     def weight_entry_handle_EVT_CHOICE(self, event): # pylint: disable=W0613
 
