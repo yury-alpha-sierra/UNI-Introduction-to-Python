@@ -1,13 +1,13 @@
 """[summary]
 """
 import wx  # pylint: disable=E0611,W0401
-import pandas as pd
 
-class Ui(wx.Frame): # pylint: disable=too-many-ancestors
+
+class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     """[summary]
     """
 
-    def __init__(self, name, parent, id, app): # pylint: disable=W0622
+    def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.application = app
 
@@ -43,15 +43,18 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
         self.my_weight_entry = wx.TextCtrl(self.my_service_panel)
         self.my_weight_entry.SetMaxLength(5)
 
-        self.my_weight_entry.Bind(wx.EVT_CHAR, self.my_weight_entry_handle_EVT_CHAR)
-        self.my_weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
+        self.my_weight_entry.Bind(
+            wx.EVT_CHAR, self.my_weight_entry_handle_EVT_CHAR)
+        self.my_weight_entry.Bind(
+            wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
 
         self.my_weight_boxsizer.Add(
             self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
         self.my_weigh_unit_selector = wx.RadioBox(
             self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
             majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
-        self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
+        self.my_weigh_unit_selector.Bind(
+            wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
 
         self.my_weigh_unit_selector.SetSelection(1)
         self.my_weight_boxsizer.Add(
@@ -59,13 +62,15 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_country_label = wx.StaticText(
-            self.my_service_panel, id=wx.ID_ANY, label="  Select destination country: ")
+            self.my_service_panel, id=wx.ID_ANY,
+            label="  Select destination country: ")
         self.my_country_boxsizer.Add(self.my_country_label, 0, border=30)
         self.my_country_choice = wx.Choice(
             self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize,
             choices=list(self.application.country_and_zone_data.keys()),
             style=0)
-        self.my_country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
+        self.my_country_choice.Bind(
+            wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
         self.my_country_boxsizer.Add(self.my_country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -75,14 +80,16 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
         self.my_item_list.AppendColumn('method', width=200)
         self.my_item_list.AppendColumn('price', width=100)
 
-        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
+        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
+                               self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
 
         self.my_item_list_boxsizer.Add(
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_next_button = wx.Button(
             self.my_service_panel, label='next >>', pos=(430, 280))
-        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
+        self.my_next_button.Bind(
+            wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -121,12 +128,12 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
 
         self.SetMenuBar(self.my_menu_bar)
 
-    def  my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event): # pylint: disable=W0613
+    def my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event):  # pylint: disable=W0613
         """[summary]
         """
         self._recalculate_and_update_service_price_options_display()
 
-    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event): # pylint: disable=W0613
+    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
         """
         index = self.my_item_list.GetFirstSelected()
@@ -137,53 +144,47 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
         my_type_split = my_type_str.split(' ')
         my_method = my_type_split[0].upper()
         my_type = my_type_split[1]
-        my_price = '${0:.2f}'.format(my_price)
-        my_weight = '{0:.2f}'.format(self.application.current_weight)
-        my_weight = self.application.current_weight
+        # my_price = '${0:.2f}'.format(my_price)
+        # my_weight = '{0:.2f}'.format(self.application.current_weight)
 
+        my_weight = self.application.current_weight
 
         if self.my_weigh_unit_selector.GetSelection() == 0:
             suffix = 'Kg'
         else:
             suffix = 'gr'
 
-
         quantity = 1
-        cost = str(quantity * my_price)
-        to_basket = [str(item_no), my_type, my_method, my_weight,
-                     self.application.current_country, quantity, cost, my_price]
-        self.application.invoice.append(to_basket)
-
-        old_list = pd.DataFrame(data=self.application.invoice[0:], index=None, columns=['item no', 'type', 'method', 'weight', 'destination', 'quantity', 'cost', 'each'])
-
-        num_of_simmilar_items =  old_list.groupby([ 'weight', 'destination', 'type', 'method']).count() 
-        print(num_of_simmilar_items)
-
+        cost = float(quantity * my_price)
 
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
-        # if not old_list.empty:
-        self.my_busket_item_list.Append(num_of_simmilar_items)
+        to_basket = [str(item_no), my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
-        # else:
-        #     if len(old_list) == 1:
-        #         if (old_list[1] == my_type) and (old_list[2] == my_method) and (old_list[3] == my_weight) and (old_list[4] == self.application.current_country):
-        #             quantity += old_list[5]
-        #     else:
-        #         for each_item_in_old_list in old_list:
-        #             if (each_item_in_old_list[1] == my_type) and (each_item_in_old_list[2] == my_method) and (each_item_in_old_list[3] == my_weight) and (each_item_in_old_list[4] == self.application.current_country):
-        #                 quantity += each_item_in_old_list[5]
-        #             else:
-        #                 self.my_busket_item_list.Append(to_basket)
-        # for each_invoice_item in self.application.invoice:
-        #     for row in range(self.my_busket_item_list.GetItemCount()):
-        #         for col in range(self.my_busket_item_list.GetColumnCount()):
-        #             l.append(self.my_busket_item_list.GetItem(row, col).GetText())
-        #     # self.my_busket_item_list.Append(each_invoice_item)
-        # print(l)
+        if self.application.invoice:
 
-    def weight_entry_handle_EVT_CHOICE(self, event): # pylint: disable=W0613
+            for each_item in reversed(self.application.invoice):
+                if (each_item[1] == my_type) and (each_item[2] == my_method) and (each_item[3] == my_weight) and (each_item[4] == self.application.current_country):
+
+                    quantity = each_item[5] + 1
+                    cost = my_price * quantity
+                    item_no = each_item[0]
+                    self.application.invoice.remove(each_item)
+
+                else:
+                    self.my_busket_item_list.Append(each_item)
+
+            to_basket = [str(item_no), my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+
+            self.my_busket_item_list.Append(to_basket)
+        else:
+            self.my_busket_item_list.Append(to_basket)
+
+        self.application.invoice.append(to_basket)
+
+
+    def weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
 
         self._recalculate_and_update_service_price_options_display()
 
@@ -208,15 +209,18 @@ class Ui(wx.Frame): # pylint: disable=too-many-ancestors
 
     def _recalculate_and_update_service_price_options_display(self):
 
-        self.application.current_country = self.my_country_choice.GetString(self.my_country_choice.GetSelection())
+        self.application.current_country = self.my_country_choice.GetString(
+            self.my_country_choice.GetSelection())
         self.application.current_weight = self.my_weight_entry.GetValue()
         self.my_item_list.DeleteAllItems()
-        if not ((self.application.current_weight == '') or (self.application.current_country == '')):
+        if not((self.application.current_weight == '')
+               or(self.application.current_country == '')):
             if self.my_weigh_unit_selector.GetSelection() == 0:
                 multiplier = 1000
             else:
                 multiplier = 1
-            self.application.current_weight = float(self.application.current_weight) * float(multiplier)
+            self.application.current_weight = float(
+                self.application.current_weight) * float(multiplier)
 
             self.application.available_serice_price_options.clear()
             self.application.available_serice_price_options = self.application.get_available_serice_price_options()
