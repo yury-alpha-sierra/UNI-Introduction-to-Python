@@ -4,7 +4,6 @@ import re
 import wx  # pylint: disable=E0611,W0401
 
 
-
 class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     """[summary]
     """
@@ -100,8 +99,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_busket_item_list = wx.ListCtrl(
-            self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES, id=wx.ID_ANY,
-            pos=wx.DefaultPosition, size=[900, 150])
+            self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES,
+            id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 150])
         self.my_busket_item_list.AppendColumn('item no', width=60)
         self.my_busket_item_list.AppendColumn('type', width=70)
         self.my_busket_item_list.AppendColumn('method', width=90)
@@ -155,7 +154,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
-        to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+        to_basket = [item_no, my_type, my_method, my_weight,
+                     self.application.current_country, quantity, cost, my_price]
 
         total_cost = 0
 
@@ -169,9 +169,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                     self.application.invoice.remove(each_item)
                 else:
 
-                    self.my_busket_item_list.Append(self._prettyfy_list(each_item))
+                    self.my_busket_item_list.Append(
+                        self._prettyfy_list(each_item))
 
-            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+            to_basket = [item_no, my_type, my_method, my_weight,
+                         self.application.current_country, quantity, cost, my_price]
 
             self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
         else:
@@ -182,10 +184,12 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         for row in range(self.my_busket_item_list.GetItemCount()):
             number_pattern = re.compile(r'\d.{1,5}')
-            number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
+            number_matches = re.findall(
+                number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
             # ''.join(number_matches)
             total_cost += float(''.join(number_matches))
-            self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost ), 3)
+            self.my_status_bar.SetStatusText(
+                'Total: ${0:.2f}'.format(total_cost), 3)
 
     def _prettyfy_list(self, line):
 
@@ -195,9 +199,12 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             suffix = 'gr'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+        new_line = [
+            str(item_no),
+            my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix),
+            my_country, quantity, '${0:.2f}'.format(cost),
+            '${0:.2f}'.format(my_price)]
         return new_line
-
 
     def weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
 
