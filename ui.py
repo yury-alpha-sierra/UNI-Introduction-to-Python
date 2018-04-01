@@ -98,7 +98,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_busket_item_list = wx.ListCtrl(
-            self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
+            self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES, id=wx.ID_ANY,
             pos=wx.DefaultPosition, size=[900, 150])
         self.my_busket_item_list.AppendColumn('item no', width=60)
         self.my_busket_item_list.AppendColumn('type', width=70)
@@ -144,15 +144,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         my_type_split = my_type_str.split(' ')
         my_method = my_type_split[0].upper()
         my_type = my_type_split[1]
-        # my_price = '${0:.2f}'.format(my_price)
-        # my_weight = '{0:.2f}'.format(self.application.current_weight)
 
         my_weight = self.application.current_weight
-
-        if self.my_weigh_unit_selector.GetSelection() == 0:
-            suffix = 'Kg'
-        else:
-            suffix = 'gr'
 
         quantity = 1
         cost = float(quantity * my_price)
@@ -160,28 +153,57 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
-        to_basket = [str(item_no), my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+        to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
         if self.application.invoice:
 
             for each_item in reversed(self.application.invoice):
                 if (each_item[1] == my_type) and (each_item[2] == my_method) and (each_item[3] == my_weight) and (each_item[4] == self.application.current_country):
-
                     quantity = each_item[5] + 1
                     cost = my_price * quantity
                     item_no = each_item[0]
                     self.application.invoice.remove(each_item)
-
                 else:
-                    self.my_busket_item_list.Append(each_item)
+                    self.my_busket_item_list.Append(self._prettyfy_list(each_item))
 
-            to_basket = [str(item_no), my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
-            self.my_busket_item_list.Append(to_basket)
+            self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
         else:
-            self.my_busket_item_list.Append(to_basket)
+            self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
 
         self.application.invoice.append(to_basket)
+        self.my_busket_item_list.SortItems(self._sorter)
+
+    def _sorter(self, i1, i2):
+        """[summary]
+
+        Arguments:
+            i1 {[type]} -- [description]
+            i2 {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
+
+        if i1[0] == i2[0]:
+            ret = 0
+        if i1[0] > i2[0]:
+            ret = 1
+        if i1[0] < i2[0]:
+            ret = -1
+        return ret
+
+    def _prettyfy_list(self, line):
+
+        if self.my_weigh_unit_selector.GetSelection() == 0:
+            suffix = 'Kg'
+        else:
+            suffix = 'gr'
+
+        item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
+        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+        return new_line
 
 
     def weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
