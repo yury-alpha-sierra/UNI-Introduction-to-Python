@@ -1,6 +1,8 @@
 """[summary]
 """
+import re
 import wx  # pylint: disable=E0611,W0401
+
 
 
 class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
@@ -155,6 +157,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
+        total_cost = 0
+
         if self.application.invoice:
 
             for each_item in reversed(self.application.invoice):
@@ -164,35 +168,24 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                     item_no = each_item[0]
                     self.application.invoice.remove(each_item)
                 else:
+
                     self.my_busket_item_list.Append(self._prettyfy_list(each_item))
 
             to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
             self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
         else:
+
             self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
 
         self.application.invoice.append(to_basket)
-        self.my_busket_item_list.SortItems(self._sorter)
 
-    def _sorter(self, i1, i2):
-        """[summary]
-
-        Arguments:
-            i1 {[type]} -- [description]
-            i2 {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        if i1[0] == i2[0]:
-            ret = 0
-        if i1[0] > i2[0]:
-            ret = 1
-        if i1[0] < i2[0]:
-            ret = -1
-        return ret
+        for row in range(self.my_busket_item_list.GetItemCount()):
+            number_pattern = re.compile(r'\d.{1,5}')
+            number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
+            # ''.join(number_matches)
+            total_cost += float(''.join(number_matches))
+            self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost ), 3)
 
     def _prettyfy_list(self, line):
 
