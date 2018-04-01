@@ -157,8 +157,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         to_basket = [item_no, my_type, my_method, my_weight,
                      self.application.current_country, quantity, cost, my_price]
 
-        total_cost = 0
-
         if self.application.invoice:
 
             for each_item in reversed(self.application.invoice):
@@ -182,14 +180,21 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.application.invoice.append(to_basket)
 
+        total_cost = 0
+        total_items = 0
+
         for row in range(self.my_busket_item_list.GetItemCount()):
             number_pattern = re.compile(r'\d.{1,5}')
             number_matches = re.findall(
                 number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-            # ''.join(number_matches)
+
+            total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
             total_cost += float(''.join(number_matches))
-            self.my_status_bar.SetStatusText(
-                'Total: ${0:.2f}'.format(total_cost), 3)
+
+        self.my_status_bar.SetStatusText(
+            'Total: ${0:.2f}'.format(total_cost), 3)
+        self.my_status_bar.SetStatusText(
+            'Items: {0}'.format(total_items), 2)
 
     def _prettyfy_list(self, line):
 
