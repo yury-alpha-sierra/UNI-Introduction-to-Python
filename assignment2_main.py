@@ -4,7 +4,7 @@ from application import Application
 
 
 POSTAGE_SERVICE = Application(
-    'Posta Service', './/data//', 'Countries and Zones.csv',
+    'Postal Service', './/data//', 'Countries and Zones.csv',
     'sales_history.csv')
 
 
