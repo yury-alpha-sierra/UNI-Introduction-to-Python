@@ -12,25 +12,26 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.application = app
 
-        wx.Frame.__init__(self, parent, id, name, size=(1000, 550))
+        wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE ^
+                          wx.RESIZE_BORDER ^ wx.MAXIMIZE_BOX ^ wx.MINIMIZE_BOX, size=(1000, 550))
 
         self.Bind(wx.EVT_CLOSE, self.my_frame_handle_EVT_CLOSE)
 
         self.my_service_panel = wx.Panel(self)
 
-        self.my_status_bar = self.CreateStatusBar(
-            4)     # pylint: disable=unused-variable
-        self.my_status_bar.SetStatusWidths([100, 300, 200, 100])
+        # self.my_service_panel.Hide()
+
+        self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
+        self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
 
         self.my_menu_bar = wx.MenuBar()
         self.my_menu = wx.Menu()
 
-        self.my_menu.Append(
-            wx.NewId(),
-            "Service", "This will start new postal service transaction.")
-        self.my_menu.Append(
-            wx.NewId(),
-            "Admin", "This will start admin functions.")
+        self.menu_item_service = self.my_menu.Append(wx.NewId(), "Service", "Start new postal service transaction.")
+        self.Bind(wx.EVT_MENU, self.my_menu_handle_Service_Option, self.menu_item_service)
+        self.my_menu.Append(wx.NewId(), "Admin", "Start admin functions.")
+        self.menu_item_exit = self.my_menu.Append(wx.NewId(), "Exit", "Terminate application.")
+        self.Bind(wx.EVT_MENU, self.my_frame_handle_EVT_CLOSE, self.menu_item_exit)
 
         self.my_menu_bar.Append(self.my_menu, "Function")
 
@@ -114,16 +115,14 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_user_input_boxsizer = wx.BoxSizer(wx.VERTICAL)
-        self.my_user_input_boxsizer.Add(
-            self.my_weight_boxsizer, 0, wx.ALIGN_TOP, border=3)
-        self.my_user_input_boxsizer.Add(
-            self.my_country_boxsizer, 0, wx.ALIGN_BOTTOM, border=3)
-        self.my_user_input_boxsizer.Add(
-            self.my_item_list_boxsizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
-        self.my_user_input_boxsizer.Add(
-            self.my_busket_item_list, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
-        self.my_user_input_boxsizer.Add(
-            self.my_buttons_boxsizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
+        self.my_user_input_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP, border=3)
+        self.my_user_input_boxsizer.Add(self.my_country_boxsizer, 1, wx.ALIGN_BOTTOM, border=3)
+        self.my_user_input_boxsizer.Add(self.my_item_list_boxsizer, 1,
+                                        wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
+        self.my_user_input_boxsizer.Add(self.my_busket_item_list, 1,
+                                        wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
+        self.my_user_input_boxsizer.Add(self.my_buttons_boxsizer, 1,
+                                        wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=3)
 
         self.my_service_panel.SetSizer(self.my_user_input_boxsizer)
 
@@ -258,3 +257,18 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         """[summary]
         """
         self.Destroy()
+
+    def my_menu_handle_Service_Option(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.my_service_panel.Show()
+        # self.my_service_panel.size = (1000, 550)
+        # self.my_service_panel.Layout()
+        # self.my_weight_boxsizer.Layout()
+        # self.my_country_boxsizer.Layout()
+        # self.my_user_input_boxsizer.Layout()
+        # self.my_item_list_boxsizer.Layout()
+        # self.my_busket_item_list.Layout()
+        # self.my_buttons_boxsizer.Layout()
+
+        # self.Layout()
