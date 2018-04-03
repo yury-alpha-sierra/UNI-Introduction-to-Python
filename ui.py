@@ -44,7 +44,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             self.my_service_panel, id=wx.ID_ANY,
             label="  Enter item weight:")
         self.my_weight_label.SetFont(my_font)
-        
+
         self.my_weight_boxsizer.Add(
             self.my_weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL,
             border=15)
