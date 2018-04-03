@@ -1,5 +1,6 @@
 """[summary]
 """
+
 import pandas as pd
 import wx
 
@@ -18,6 +19,8 @@ class Application:
             name {[type]} -- [description]
             data_dir {[type]} -- [description]
         """
+        self.POSTAGE_SERVICE_UI = None
+        self.FRAME = None
         self.name = name
         self.data_base_directory = data_dir
         self.country_file = file_name
@@ -52,12 +55,17 @@ class Application:
 
         self.__instantiate_service()
 
-        POSTAGE_SERVICE_UI = wx.App()
-        FRAME = Ui(self.name, parent=None, id=-1, app=self)
+        self._create_and_init_UI()
 
-        FRAME.Centre()
-        FRAME.Show()
-        POSTAGE_SERVICE_UI.MainLoop()
+    def _create_and_init_UI(self):
+        """[summary]
+        """
+        self.POSTAGE_SERVICE_UI = wx.App()
+        self.FRAME = Ui(self.name, parent=None, id=-1, app=self)
+
+        self.FRAME.Centre()
+        self.FRAME.Show()
+        self.POSTAGE_SERVICE_UI.MainLoop()
 
     def __initialise_volatile(self):
 
