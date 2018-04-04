@@ -10,18 +10,22 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
-        self.application = app  # wx.CLIP_CHILDREN ^ wx.RESIZE_BORDER ^ wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX
+        self.application = app
 
-        wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 550))
+        wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
 
         self.Bind(wx.EVT_CLOSE, self.my_frame_handle_EVT_CLOSE)
 
         my_font = wx.Font(14, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'Consolas')
-        self.my_service_panel = wx.Panel(self)
-        # self.my_admin_panel = wx.Panel(self)
 
-        # # self.my_service_panel.Hide()
-        # # self.my_admin_panel.Hide()
+        self.my_service_panel = wx.Panel(self)
+        self.my_admin_panel = wx.Panel(self)
+
+        self.my_service_panel.Hide()
+        self.my_admin_panel.Hide()
+
+        # self.my_service_panel.SetBackgroundColour("BLUE")
+        self.my_admin_panel.SetBackgroundColour("RED")
 
         self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
         self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
@@ -29,10 +33,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_menu_bar = wx.MenuBar()
         self.my_menu = wx.Menu()
 
-        # self.menu_item_service = self.my_menu.Append(wx.NewId(), "Service", "Start new postal service transaction.")
-        # self.Bind(wx.EVT_MENU, self.my_menu_handle_Service_Option, self.menu_item_service)
-        # self.menu_item_admin = self.my_menu.Append(wx.NewId(), "Admin", "Start admin functions.")
-        # self.Bind(wx.EVT_MENU, self.my_menu_handle_Admin_Option, self.menu_item_admin)
+        self.menu_item_service = self.my_menu.Append(wx.NewId(), "Service", "Start new postal service transaction.")
+        self.Bind(wx.EVT_MENU, self.my_menu_handle_Service_Option, self.menu_item_service)
+        self.menu_item_admin = self.my_menu.Append(wx.NewId(), "Admin", "Start admin functions.")
+        self.Bind(wx.EVT_MENU, self.my_menu_handle_Admin_Option, self.menu_item_admin)
         self.menu_item_exit = self.my_menu.Append(wx.NewId(), "Exit", "Terminate application.")
         self.menu_item_exit.SetFont(my_font)
         self.Bind(wx.EVT_MENU, self.my_frame_handle_EVT_CLOSE, self.menu_item_exit)
@@ -99,15 +103,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_item_list_boxsizer.Add(
             self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
-        self.my_next_button = wx.Button(
-            self.my_service_panel, label='next >>', pos=(430, 280))
-        self.my_next_button.Bind(
-            wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
+        self.my_next_button = wx.Button(self.my_service_panel, label='') # , pos=(430, 280)
+        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.my_buttons_boxsizer.Add(
-            self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
+        self.my_buttons_boxsizer.Add(self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_busket_item_list = wx.ListCtrl(
@@ -123,22 +123,30 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.AppendColumn('each', width=100)
 
         self.my_busket_boxsizer.Add(
-            self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
+            self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
+
+        self.my_panel_boxsizer = wx.BoxSizer(wx.VERTICAL)
+        self.my_panel_boxsizer.Add(self.my_service_panel, 1, wx.ALL | wx.EXPAND, border=3)
+        self.my_panel_boxsizer.Add(self.my_admin_panel, 1, wx.ALL | wx.EXPAND, border=3)
 
         self.my_service_boxsizer = wx.BoxSizer(wx.VERTICAL)
-        # self.my_service_boxsizer.Add(self.my_service_panel)
-        # self.my_service_boxsizer.Add(self.my_admin_panel)
 
-        self.my_service_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP | wx.ALL, border=3)
+        self.my_service_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP | wx.ALL | wx.EXPAND, border=3)
         self.my_service_boxsizer.Add(self.my_country_boxsizer, 1, wx.ALIGN_BOTTOM | wx.ALL| wx.EXPAND, border=3)
         self.my_service_boxsizer.Add(self.my_item_list_boxsizer, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, border=3)
+                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
         self.my_service_boxsizer.Add(self.my_busket_item_list, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, border=3)
+                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
         self.my_service_boxsizer.Add(self.my_buttons_boxsizer, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, border=3)
+                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+
+        # self.SetAutoLayout(True)
+        self.SetSizer(self.my_panel_boxsizer)
+        self.Layout()
 
         self.my_service_panel.SetSizer(self.my_service_boxsizer)
+        self.my_service_panel.Layout()
+        # self.my_service_boxsizer.Fit(self)
 
         self.SetMenuBar(self.my_menu_bar)
 
@@ -273,25 +281,24 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         """
         self.Destroy()
 
-    # def my_menu_handle_Service_Option(self, event):  # pylint: disable=W0613
-    #     """[summary]
-    #     """
-    #     self.SetTitle("Postal Service")
-    #     self.my_admin_panel.Hide()
+    def my_menu_handle_Service_Option(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.SetTitle("Postal Service")
+        self.my_admin_panel.Hide()
 
-    #     # self.my_service_panel.Show()
-    #     # self.my_weight_boxsizer.Fit()
+        self.my_service_panel.Show()
 
-    #     self.my_service_panel.Fit()
+        self.Layout()
 
-    #     self.Layout()
 
-    # def my_menu_handle_Admin_Option(self, event):  # pylint: disable=W0613
-    #     """[summary]
-    #     """
-    #     self.SetTitle("Admin Service")
-    #     self.my_admin_panel.Show()
+    def my_menu_handle_Admin_Option(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.SetTitle("Admin Service")
+        self.my_admin_panel.Show()
 
-    #     self.my_service_panel.Hide()
-    #     self.my_admin_panel.Layout()
-    #     self.Layout()
+        self.my_service_panel.Hide()
+
+        self.Layout()
+   
