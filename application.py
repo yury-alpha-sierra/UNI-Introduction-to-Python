@@ -33,7 +33,7 @@ class Application:
         self.sales_history = []
         self.available_serice_price_options = []
 
-        self.__initialise_volatile()
+        self.initialise_volatile()
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
         self.sales_history = self.__import_sales_history()
@@ -67,7 +67,7 @@ class Application:
         self.FRAME.Show()
         self.POSTAGE_SERVICE_UI.MainLoop()
 
-    def __initialise_volatile(self):
+    def initialise_volatile(self):
 
         self.current_country = ''
         self.current_weight = 0

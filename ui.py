@@ -16,7 +16,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.Bind(wx.EVT_CLOSE, self.my_frame_handle_EVT_CLOSE)
 
-        my_font = wx.Font(14, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif') #u'Consolas'
+        self.my_font = wx.Font(14, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
 
         self.my_service_panel = wx.Panel(self)
         self.my_admin_panel = wx.Panel(self)
@@ -24,11 +24,16 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_service_panel.Hide()
         self.my_admin_panel.Hide()
 
-        self.my_service_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
-
-        self.my_service_panel.SetBackgroundColour(self.my_service_panel_colour)
         self.my_admin_panel.SetBackgroundColour("RED")
 
+        self._init_service_pane()
+
+    def _init_service_pane(self):
+        """[summary]
+        """
+
+        self.my_service_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
+        self.my_service_panel.SetBackgroundColour(self.my_service_panel_colour)
 
         self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
         self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
@@ -41,74 +46,57 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.menu_item_admin = self.my_menu.Append(wx.NewId(), "Admin", "Start admin functions.")
         self.Bind(wx.EVT_MENU, self.my_menu_handle_Admin_Option, self.menu_item_admin)
         self.menu_item_exit = self.my_menu.Append(wx.NewId(), "Exit", "Terminate application.")
-        self.menu_item_exit.SetFont(my_font)
+        self.menu_item_exit.SetFont(self.my_font)
         self.Bind(wx.EVT_MENU, self.my_frame_handle_EVT_CLOSE, self.menu_item_exit)
 
         self.my_menu_bar.Append(self.my_menu, "Function")
-        self.my_menu_bar.SetFont(my_font)
+        self.my_menu_bar.SetFont(self.my_font)
+        self.SetMenuBar(self.my_menu_bar)
+
         self.my_weight_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_weight_label = wx.StaticText(self.my_service_panel, id=wx.ID_ANY, label="  Enter item weight:")
-        self.my_weight_label.SetFont(my_font)
-
+        self.my_weight_label.SetFont(self.my_font)
         self.my_weight_boxsizer.Add(self.my_weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=15)
         self.my_weight_boxsizer.AddSpacer(20)
         self.my_weight_entry = wx.TextCtrl(self.my_service_panel, size=(70, 30))
-
-        self.my_weight_entry.SetFont(my_font)
+        self.my_weight_entry.SetFont(self.my_font)
         self.my_weight_entry.SetMaxLength(5)
-
         self.my_weight_entry.Bind(wx.EVT_CHAR, self.my_weight_entry_handle_EVT_CHAR)
         self.my_weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
-
         self.my_weight_boxsizer.Add(self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
         self.my_weigh_unit_selector = wx.RadioBox(self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"], majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
         self.my_weight_boxsizer.AddSpacer(15)
-        self.my_weigh_unit_selector.SetFont(my_font)
+        self.my_weigh_unit_selector.SetFont(self.my_font)
         self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
 
         self.my_weigh_unit_selector.SetSelection(1)
         self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_country_label = wx.StaticText(
-            self.my_service_panel, id=wx.ID_ANY,
-            label="  Select destination country: ")
-        self.my_country_label.SetFont(my_font)
+        self.my_country_label = wx.StaticText(self.my_service_panel, id=wx.ID_ANY, label="  Select destination country: ")
+        self.my_country_label.SetFont(self.my_font)
         self.my_country_boxsizer.Add(self.my_country_label, 0, border=30)
-        self.my_country_choice = wx.Choice(
-            self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize,
-            choices=list(self.application.country_and_zone_data.keys()),
-            style=0)
-        self.my_country_choice.SetFont(my_font)
-        self.my_country_choice.Bind(
-            wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
+        self.my_country_choice = wx.Choice(self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize, choices=list(self.application.country_and_zone_data.keys()), style=0)
+        self.my_country_choice.SetFont(self.my_font)
+        self.my_country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
         self.my_country_boxsizer.Add(self.my_country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_item_list = wx.ListCtrl(
-            self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY,
-            pos=wx.DefaultPosition, size=[900, 200])
+        self.my_item_list = wx.ListCtrl(self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 200])
         self.my_item_list.AppendColumn('method', width=230)
         self.my_item_list.AppendColumn('price', width=100)
-        self.my_item_list.SetFont(my_font)
-
-        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
-                               self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
-
-        self.my_item_list_boxsizer.Add(
-            self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
-
-        self.my_next_button = wx.Button(self.my_service_panel, label='print receipt and get ready for next customer')
-        self.my_next_button.SetFont(my_font)
-        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
+        self.my_item_list.SetFont(self.my_font)
+        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
+        self.my_item_list_boxsizer.Add(self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.my_next_button = wx.Button(self.my_service_panel, label='print receipt and get ready for next customer')
+        self.my_next_button.SetFont(self.my_font)
+        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
         self.my_buttons_boxsizer.Add(self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_busket_item_list = wx.ListCtrl(
-            self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES,
-            id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 150])
+        self.my_busket_item_list = wx.ListCtrl(self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 150])
         self.my_busket_item_list.AppendColumn('item no', width=60)
         self.my_busket_item_list.AppendColumn('type', width=70)
         self.my_busket_item_list.AppendColumn('method', width=90)
@@ -118,31 +106,24 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.AppendColumn('cost', width=80)
         self.my_busket_item_list.AppendColumn('each', width=100)
 
-        self.my_busket_boxsizer.Add(
-            self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
-
+        self.my_busket_boxsizer.Add(self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
         self.my_panel_boxsizer = wx.BoxSizer(wx.VERTICAL)
         self.my_panel_boxsizer.Add(self.my_service_panel, 1, wx.ALL | wx.EXPAND, border=3)
         self.my_panel_boxsizer.Add(self.my_admin_panel, 1, wx.ALL | wx.EXPAND, border=3)
 
         self.my_service_boxsizer = wx.BoxSizer(wx.VERTICAL)
-
         self.my_service_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP | wx.ALL | wx.EXPAND, border=3)
         self.my_service_boxsizer.Add(self.my_country_boxsizer, 1, wx.ALIGN_BOTTOM | wx.ALL| wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_item_list_boxsizer, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_busket_item_list, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_buttons_boxsizer, 1,
-                                     wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_item_list_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_busket_item_list, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_buttons_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
 
         self.SetSizer(self.my_panel_boxsizer)
         self.Layout()
 
         self.my_service_panel.SetSizer(self.my_service_boxsizer)
         self.my_service_panel.Layout()
-
-        self.SetMenuBar(self.my_menu_bar)
+        self.my_weight_entry.SetFocus()
 
     def my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event):  # pylint: disable=W0613
         """[summary]
@@ -242,8 +223,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.my_service_panel.Hide()
-        # self.application.destroy_and_recreate_UI()
+        self.__blank_all_service_fields()
 
     def country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
@@ -270,6 +250,16 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             for each_item in self.application.available_serice_price_options:
                 self.my_item_list.Append(each_item)
 
+    def __blank_all_service_fields(self):
+
+        self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
+        self.my_country_choice.SetSelection(-1)
+        self.my_weigh_unit_selector.SetSelection(1)
+        self.my_item_list.DeleteAllItems()
+        self.my_busket_item_list.DeleteAllItems()
+        self.application.initialise_volatile()
+        self.my_weight_entry.SetFocus()
+
     def my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
         """
@@ -280,7 +270,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         """
         self.SetTitle("Postal Service")
         self.my_admin_panel.Hide()
-
         self.my_service_panel.Show()
 
         self.Layout()
