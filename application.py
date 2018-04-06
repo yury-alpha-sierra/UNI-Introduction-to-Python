@@ -83,7 +83,6 @@ class Application:
 
     def __import_sales_history(self):
         """
-
         """
         try:
             return_frame = pd.read_csv(
@@ -159,3 +158,10 @@ class Application:
                 self.country_file))
             exit(404)
         return return_dictionary
+
+    def get_next_sales_number(self):
+        """[summary]
+        """
+
+        ss = self.sales_history.index.max()
+        return int(ss) + 1

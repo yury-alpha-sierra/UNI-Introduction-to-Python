@@ -36,7 +36,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
         self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
-
+        self.my_status_bar.SetStatusText('Sale number {}'.format(self.application.get_next_sales_number()))
         self.my_menu_bar = wx.MenuBar()
         self.my_menu = wx.Menu()
 
@@ -48,7 +48,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.menu_item_exit.SetFont(self.my_font)
         self.Bind(wx.EVT_MENU, self.my_frame_handle_EVT_CLOSE, self.menu_item_exit)
 
-        self.my_menu_bar.Append(self.my_menu, "Function")
+        self.my_menu_bar.Append(self.my_menu, "Function Selector")
         self.my_menu_bar.SetFont(self.my_font)
         self.SetMenuBar(self.my_menu_bar)
 
@@ -135,8 +135,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         index = self.my_item_list.GetFirstSelected()
         item_no = len(self.application.invoice) + 1
 
-        my_type_str, my_price = self.application.available_serice_price_options[
-            index]
+        my_type_str, my_price = self.application.available_serice_price_options[index]
         my_type_split = my_type_str.split(' ')
         my_method = my_type_split[0].upper()
         my_type = my_type_split[1]
@@ -149,11 +148,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_item_list.DeleteAllItems()
         self.my_busket_item_list.DeleteAllItems()
 
-        to_basket = [item_no, my_type, my_method, my_weight,
-                     self.application.current_country, quantity, cost, my_price]
+        to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
 
         if self.application.invoice:
-
             for each_item in reversed(self.application.invoice):
                 if (each_item[1] == my_type) and (each_item[2] == my_method) and (each_item[3] == my_weight) and (each_item[4] == self.application.current_country):
                     quantity = each_item[5] + 1
@@ -161,16 +158,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                     item_no = each_item[0]
                     self.application.invoice.remove(each_item)
                 else:
-
-                    self.my_busket_item_list.Append(
-                        self._prettyfy_list(each_item))
-
-            to_basket = [item_no, my_type, my_method, my_weight,
-                         self.application.current_country, quantity, cost, my_price]
-
+                    self.my_busket_item_list.Append(self._prettyfy_list(each_item))
+            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
             self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
         else:
-
             self.my_busket_item_list.Append(self._prettyfy_list(to_basket))
 
         self.application.invoice.append(to_basket)
@@ -178,18 +169,19 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         total_cost = 0
         total_items = 0
 
+        index = 0
+        for key, data in to_basket:
+            print(data)
+            print(key)
         for row in range(self.my_busket_item_list.GetItemCount()):
             number_pattern = re.compile(r'\d.{1,5}')
-            number_matches = re.findall(
-                number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-
+            number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
+### TODO: find a way of selectig colum number from text name of the column
             total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
             total_cost += float(''.join(number_matches))
 
-        self.my_status_bar.SetStatusText(
-            'Total: ${0:.2f}'.format(total_cost), 3)
-        self.my_status_bar.SetStatusText(
-            'Items: {0}'.format(total_items), 2)
+        self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
+        self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
 
     def _prettyfy_list(self, line):
 
@@ -199,11 +191,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             suffix = 'gr'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-        new_line = [
-            str(item_no),
-            my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix),
-            my_country, quantity, '${0:.2f}'.format(cost),
-            '${0:.2f}'.format(my_price)]
+        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
         return new_line
 
     def weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
