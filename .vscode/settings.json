@@ -1,0 +1,10 @@
+{
+    "python.linting.enabled": true,
+    "python.pythonPath": "C:\\Users\\yury_\\Anaconda3\\python.exe",
+    "python.linting.mypyArgs": [
+        "--ignore-missing-imports",
+        "--follow-imports=silent",
+        "--extension-pkg-whitelist=wx",
+        "--redefining-builtins-modules=builtins"
+    ],
+}

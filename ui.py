@@ -31,7 +31,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def _init_service_pane(self):
         """[summary]
         """
-
         self.my_service_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
         self.my_service_panel.SetBackgroundColour(self.my_service_panel_colour)
 
@@ -251,6 +250,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 self.my_item_list.Append(each_item)
 
     def __blank_all_service_fields(self):
+        """[summary]
+        """
 
         self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
         self.my_country_choice.SetSelection(-1)

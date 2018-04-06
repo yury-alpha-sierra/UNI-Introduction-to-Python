@@ -38,20 +38,12 @@ class Application:
         self.country_and_zone_data = self.__import_country_and_zone_data()
         self.sales_history = self.__import_sales_history()
 
-        self.__register_service(
-            'Economy Letter', 'Economy Letters Price Guide ($).csv')
-        self.__register_service(
-            'Economy Parcel by Air',
-            'Economy Parcel Price Guide_by Air ($).csv')
-        self.__register_service(
-            'Economy Parcel by Sea',
-            'Economy Parcel Price Guide_by Sea ($).csv')
-        self.__register_service(
-            'Express Letter', 'Express Letter Price Guide ($).csv')
-        self.__register_service(
-            'Express Parcel', 'Express Parcel Price Guide ($).csv')
-        self.__register_service(
-            'Standard Parcel', 'Standard Parcel Price Guide ($).csv')
+        self.__register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
+        self.__register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
+        self.__register_service('Economy Parcel by Sea', 'Economy Parcel Price Guide_by Sea ($).csv')
+        self.__register_service('Express Letter', 'Express Letter Price Guide ($).csv')
+        self.__register_service('Express Parcel', 'Express Parcel Price Guide ($).csv')
+        self.__register_service('Standard Parcel', 'Standard Parcel Price Guide ($).csv')
 
         self.__instantiate_service()
 
@@ -77,14 +69,17 @@ class Application:
 
     def get_sales_history_by_sales_number(self, sales_number):
         return_iterable = []
-        if self.sales_history.loc[sales_number].values.ndim > 1:
-            self.single_row = False
-            for each_value in self.sales_history.loc[sales_number].values:
-                return_iterable.append(each_value)
-        else:
-            self.single_row = True
-            return_iterable = self.sales_history.loc[sales_number].values
-        return return_iterable
+        try:
+            if self.sales_history.loc[sales_number].values.ndim > 1:
+                self.single_row = False
+                for each_value in self.sales_history.loc[sales_number].values:
+                    return_iterable.append(each_value)
+            else:
+                self.single_row = True
+                return_iterable = self.sales_history.loc[sales_number].values
+            return return_iterable
+        except:
+            return None
 
     def __import_sales_history(self):
         """
