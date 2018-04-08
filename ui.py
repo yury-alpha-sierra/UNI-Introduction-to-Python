@@ -85,9 +85,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_weight_label.SetFont(self.my_font)
         self.my_weight_boxsizer.Add(self.my_weight_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=15)
         self.my_weight_boxsizer.AddSpacer(20)
-        self.my_weight_entry = wx.TextCtrl(self.my_service_panel, size=(70, 30))
+        self.my_weight_entry = wx.TextCtrl(self.my_service_panel, size=(85, 30))
         self.my_weight_entry.SetFont(self.my_font)
-        self.my_weight_entry.SetMaxLength(5)
+        self.my_weight_entry.SetMaxLength(7)
         self.my_weight_entry.Bind(wx.EVT_CHAR, self.__my_weight_entry_handle_EVT_CHAR)
         self.my_weight_entry.Bind(wx.EVT_TEXT, self.__weight_entry_handle_EVT_CHOICE)
         self.my_weight_boxsizer.Add(self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
@@ -154,10 +154,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __prettyfy_list(self, line):
 
-        if self.my_weigh_unit_selector.GetSelection() == 0:
-            suffix = 'Kg'
-        else:
-            suffix = 'gr'
+        # if self.my_weigh_unit_selector.GetSelection() == 0:
+        #     suffix = 'Kg'
+        # else:
+        #     suffix = 'gr'
+        suffix = 'Kg'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
         new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
@@ -165,26 +166,30 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __recalculate_and_update_service_price_options_display(self):
 
-        self.application.current_country = self.my_country_choice.GetString(
-            self.my_country_choice.GetSelection())
+        self.application.current_country = self.my_country_choice.GetString(self.my_country_choice.GetSelection())
         self.application.current_weight = self.my_weight_entry.GetValue()
-        self.my_item_list.DeleteAllItems()
-        if not((self.application.current_weight == '')
-               or(self.application.current_country == '')):
-            if self.my_weigh_unit_selector.GetSelection() == 0:
-                multiplier = 1000
-            else:
-                multiplier = 1
-            self.application.current_weight = float(self.application.current_weight) * float(multiplier)
+        if self.application.current_country and self.application.current_weight:
+            self.my_item_list.DeleteAllItems()
+            if not((self.application.current_weight == '') or (self.application.current_country == '')):
+                if self.my_weigh_unit_selector.GetSelection() == 0:
+                    divisor = 1
+                else:
+                    divisor = 1000
+                self.application.current_weight = float(self.application.current_weight) / float(divisor)
 
-            self.application.available_serice_price_options.clear()
-            self.application.available_serice_price_options = self.application.get_available_serice_price_options()
-            for each_item in self.application.available_serice_price_options:
-                self.my_item_list.Append(each_item)
+                if self.application.available_serice_price_options:
+                    self.application.available_serice_price_options.clear()
+                self.application.available_serice_price_options = self.application.get_available_serice_price_options()
+                for each_item in self.application.available_serice_price_options:
+                    self.my_item_list.Append(each_item)
 
-            if not self.delete_or_modify:
-                self.my_country_choice.SetSelection(-1)
+            # if self.application.available_serice_price_options:
+            #     self.application.available_serice_price_options.clear()
+            # self.application.available_serice_price_options = self.application.get_available_serice_price_options()
+            # for each_item in self.application.available_serice_price_options:
+            #     self.my_item_list.Append(each_item)
 
+           
     def __blank_all_service_fields(self):
         """[summary]
         """
@@ -232,7 +237,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         keycode = event.GetKeyCode()
         if keycode < 255:  # valid ASCII
             # Valid alphanumeric character + backspace, left and right arrow
-            if chr(keycode).isdigit() or keycode == 8 or keycode == 37 or keycode == 39:
+            if chr(keycode).isdigit() or keycode == 8 or keycode == 314 or keycode == 316 or keycode == 46:
                 event.Skip()
 
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
@@ -305,6 +310,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
         self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
         self.my_weight_entry.SetValue('')
+        if not self.delete_or_modify:
+            self.my_country_choice.SetSelection(-1)
+
 
     def __my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
@@ -320,8 +328,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         for each_line in self.application.invoice:
             self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
 
-
         self.my_weight_entry.SetValue('')
-        self.my_weight_entry.WriteText(str(int(my_weight)))
+        self.my_weigh_unit_selector.SetSelection(0)
+        self.my_weight_entry.WriteText(str('{0:.2f}'.format(my_weight)))
 
         self.delete_or_modify = False
