@@ -13,7 +13,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.application = app
 
         wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
-        self.Bind(wx.EVT_CLOSE, self.my_frame_handle_EVT_CLOSE)
+        self.Bind(wx.EVT_CLOSE, self.__my_frame_handle_EVT_CLOSE)
 
         self.my_font = wx.Font(14, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
 
@@ -24,13 +24,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_menu_bar = wx.MenuBar()
         self.my_menu = wx.Menu()
 
-        self.menu_item_service = self.my_menu.Append(wx.NewId(), "Service", "Start new postal service transaction.")
-        self.Bind(wx.EVT_MENU, self.my_menu_handle_Service_Option, self.menu_item_service)
-        self.menu_item_admin = self.my_menu.Append(wx.NewId(), "Admin", "Start admin functions.")
-        self.Bind(wx.EVT_MENU, self.my_menu_handle_Admin_Option, self.menu_item_admin)
         self.menu_item_exit = self.my_menu.Append(wx.NewId(), "Exit", "Terminate application.")
         self.menu_item_exit.SetFont(self.my_font)
-        self.Bind(wx.EVT_MENU, self.my_frame_handle_EVT_CLOSE, self.menu_item_exit)
+        self.Bind(wx.EVT_MENU, self.__my_frame_handle_EVT_CLOSE, self.menu_item_exit)
 
         self.my_menu_bar.Append(self.my_menu, "Function Selector")
         self.my_menu_bar.SetFont(self.my_font)
@@ -50,15 +46,33 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __init_info_panel(self):
 
-        self.my_info_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.my_info_boxsizer = wx.BoxSizer(wx.HORIZONTAL)  # | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL
+        my_info_text = wx.StaticText(self.my_info_panel, -1, style=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
+
+        my_message = 'this is an introductory message\n to finctionality of the postal service\n application'
+        my_info_text.SetLabel(my_message)
+
+        self.my_info_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
+        self.my_info_panel.SetBackgroundColour(self.my_info_panel_colour)
+
+        my_info_font = wx.Font(18, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
+        my_info_text.SetFont(my_info_font)
 
     def __init_admin_panel(self):
 
-        self.my_admin_panel.SetBackgroundColour("RED")
+        self.menu_item_admin = self.my_menu.Prepend(wx.NewId(), "Admin", "Start admin functions.")
+        self.Bind(wx.EVT_MENU, self.__my_menu_handle_Admin_Option, self.menu_item_admin)
+
+        self.my_admin_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
+        self.my_admin_panel.SetBackgroundColour(self.my_admin_panel_colour)
 
     def __init_service_panel(self):
         """[summary]
         """
+
+        self.menu_item_service = self.my_menu.Prepend(wx.NewId(), "Service", "Start new postal service transaction.")
+        self.Bind(wx.EVT_MENU, self.__my_menu_handle_Service_Option, self.menu_item_service)
+
         self.my_service_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
         self.my_service_panel.SetBackgroundColour(self.my_service_panel_colour)
 
@@ -73,13 +87,13 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_weight_entry = wx.TextCtrl(self.my_service_panel, size=(70, 30))
         self.my_weight_entry.SetFont(self.my_font)
         self.my_weight_entry.SetMaxLength(5)
-        self.my_weight_entry.Bind(wx.EVT_CHAR, self.my_weight_entry_handle_EVT_CHAR)
-        self.my_weight_entry.Bind(wx.EVT_TEXT, self.weight_entry_handle_EVT_CHOICE)
+        self.my_weight_entry.Bind(wx.EVT_CHAR, self.__my_weight_entry_handle_EVT_CHAR)
+        self.my_weight_entry.Bind(wx.EVT_TEXT, self.__weight_entry_handle_EVT_CHOICE)
         self.my_weight_boxsizer.Add(self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
         self.my_weigh_unit_selector = wx.RadioBox(self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"], majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
         self.my_weight_boxsizer.AddSpacer(15)
         self.my_weigh_unit_selector.SetFont(self.my_font)
-        self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.my_weigh_unit_selector_handle_EVT_RADIOBOX)
+        self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.__my_weigh_unit_selector_handle_EVT_RADIOBOX)
 
         self.my_weigh_unit_selector.SetSelection(1)
         self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
@@ -90,7 +104,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_country_boxsizer.Add(self.my_country_label, 0, border=30)
         self.my_country_choice = wx.Choice(self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize, choices=list(self.application.country_and_zone_data.keys()), style=0)
         self.my_country_choice.SetFont(self.my_font)
-        self.my_country_choice.Bind(wx.EVT_CHOICE, self.country_choice_handle_EVT_CHOICE)
+        self.my_country_choice.Bind(wx.EVT_CHOICE, self.__country_choice_handle_EVT_CHOICE)
         self.my_country_boxsizer.Add(self.my_country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -98,13 +112,13 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_item_list.AppendColumn('method', width=230)
         self.my_item_list.AppendColumn('price', width=100)
         self.my_item_list.SetFont(self.my_font)
-        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
+        self.my_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.__my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
         self.my_item_list_boxsizer.Add(self.my_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
 
         self.my_buttons_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_next_button = wx.Button(self.my_service_panel, label='print receipt and get ready for next customer')
         self.my_next_button.SetFont(self.my_font)
-        self.my_next_button.Bind(wx.EVT_BUTTON, self.my_next_button_handle_EVT_BUTTON)
+        self.my_next_button.Bind(wx.EVT_BUTTON, self.__my_next_button_handle_EVT_BUTTON)
         self.my_buttons_boxsizer.Add(self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -118,10 +132,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.AppendColumn('cost', width=80)
         self.my_busket_item_list.AppendColumn('each', width=100)
         self.my_busket_boxsizer.Add(self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
-
-        # self.my_panel_boxsizer = wx.BoxSizer(wx.VERTICAL)
-        # self.my_panel_boxsizer.Add(self.my_service_panel, 1, wx.ALL | wx.EXPAND, border=3)
-        # self.my_panel_boxsizer.Add(self.my_admin_panel, 1, wx.ALL | wx.EXPAND, border=3)
 
         self.my_service_boxsizer = wx.BoxSizer(wx.VERTICAL)
         self.my_service_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP | wx.ALL | wx.EXPAND, border=3)
@@ -137,12 +147,107 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_service_panel.Layout()
         self.my_weight_entry.SetFocus()
 
-    def my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event):  # pylint: disable=W0613
+    def __getKey(self, item):
+        return int(item[0])
+
+    def __prettyfy_list(self, line):
+
+        if self.my_weigh_unit_selector.GetSelection() == 0:
+            suffix = 'Kg'
+        else:
+            suffix = 'gr'
+
+        item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
+        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+        return new_line
+
+    def __recalculate_and_update_service_price_options_display(self):
+
+        self.application.current_country = self.my_country_choice.GetString(
+            self.my_country_choice.GetSelection())
+        self.application.current_weight = self.my_weight_entry.GetValue()
+        self.my_item_list.DeleteAllItems()
+        if not((self.application.current_weight == '')
+               or(self.application.current_country == '')):
+            if self.my_weigh_unit_selector.GetSelection() == 0:
+                multiplier = 1000
+            else:
+                multiplier = 1
+            self.application.current_weight = float(self.application.current_weight) * float(multiplier)
+
+            self.application.available_serice_price_options.clear()
+            self.application.available_serice_price_options = self.application.get_available_serice_price_options()
+            for each_item in self.application.available_serice_price_options:
+                self.my_item_list.Append(each_item)
+
+            self.my_country_choice.SetSelection(-1)
+
+    def __blank_all_service_fields(self):
         """[summary]
         """
-        self._recalculate_and_update_service_price_options_display()
 
-    def my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
+        self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
+        self.my_country_choice.SetSelection(-1)
+        self.my_weigh_unit_selector.SetSelection(1)
+        self.my_item_list.DeleteAllItems()
+        self.my_busket_item_list.DeleteAllItems()
+        self.application.initialise_volatile()
+        self.my_weight_entry.SetFocus()
+
+    def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.Destroy()
+
+    def __my_menu_handle_Service_Option(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.SetTitle("Postal Service")
+        self.my_info_panel.Hide()
+        self.my_admin_panel.Hide()
+        self.my_service_panel.Show()
+
+        self.Layout()
+
+    def __my_menu_handle_Admin_Option(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.SetTitle("Admin Service")
+        self.my_info_panel.Hide()
+        self.my_service_panel.Hide()
+        self.my_admin_panel.Show()
+
+        self.Layout()
+
+    def __weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
+
+        self.__recalculate_and_update_service_price_options_display()
+
+    def __my_weight_entry_handle_EVT_CHAR(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        keycode = event.GetKeyCode()
+        if keycode < 255:  # valid ASCII
+            # Valid alphanumeric character + backspace, left and right arrow
+            if chr(keycode).isdigit() or keycode == 8 or keycode == 37 or keycode == 39:
+                event.Skip()
+
+    def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.__blank_all_service_fields()
+
+    def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.__recalculate_and_update_service_price_options_display()
+
+    def __my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.__recalculate_and_update_service_price_options_display()
+
+    def __my_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
         """
 
@@ -196,98 +301,3 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
         self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
-
-    def __getKey(self, item):
-        return int(item[0])
-
-    def __prettyfy_list(self, line):
-
-        if self.my_weigh_unit_selector.GetSelection() == 0:
-            suffix = 'Kg'
-        else:
-            suffix = 'gr'
-
-        item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
-        return new_line
-
-    def weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
-
-        self._recalculate_and_update_service_price_options_display()
-
-    def my_weight_entry_handle_EVT_CHAR(self, event):
-        """[summary]
-        """
-        keycode = event.GetKeyCode()
-        if keycode < 255:  # valid ASCII
-            # Valid alphanumeric character + backspace, left and right arrow
-            if chr(keycode).isdigit() or keycode == 8 or keycode == 37 or keycode == 39:
-                event.Skip()
-
-    def my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
-        """[summary]
-        """
-        self.__blank_all_service_fields()
-
-    def country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
-        """[summary]
-        """
-        self._recalculate_and_update_service_price_options_display()
-
-    def _recalculate_and_update_service_price_options_display(self):
-
-        self.application.current_country = self.my_country_choice.GetString(
-            self.my_country_choice.GetSelection())
-        self.application.current_weight = self.my_weight_entry.GetValue()
-        self.my_item_list.DeleteAllItems()
-        if not((self.application.current_weight == '')
-               or(self.application.current_country == '')):
-            if self.my_weigh_unit_selector.GetSelection() == 0:
-                multiplier = 1000
-            else:
-                multiplier = 1
-            self.application.current_weight = float(self.application.current_weight) * float(multiplier)
-
-            self.application.available_serice_price_options.clear()
-            self.application.available_serice_price_options = self.application.get_available_serice_price_options()
-            for each_item in self.application.available_serice_price_options:
-                self.my_item_list.Append(each_item)
-
-            self.my_country_choice.SetSelection(-1)
-
-    def __blank_all_service_fields(self):
-        """[summary]
-        """
-
-        self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
-        self.my_country_choice.SetSelection(-1)
-        self.my_weigh_unit_selector.SetSelection(1)
-        self.my_item_list.DeleteAllItems()
-        self.my_busket_item_list.DeleteAllItems()
-        self.application.initialise_volatile()
-        self.my_weight_entry.SetFocus()
-
-    def my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
-        """[summary]
-        """
-        self.Destroy()
-
-    def my_menu_handle_Service_Option(self, event):  # pylint: disable=W0613
-        """[summary]
-        """
-        self.SetTitle("Postal Service")
-        self.my_info_panel.Hide()
-        self.my_admin_panel.Hide()
-        self.my_service_panel.Show()
-
-        self.Layout()
-
-    def my_menu_handle_Admin_Option(self, event):  # pylint: disable=W0613
-        """[summary]
-        """
-        self.SetTitle("Admin Service")
-        self.my_info_panel.Hide()
-        self.my_service_panel.Hide()
-        self.my_admin_panel.Show()
-
-        self.Layout()
