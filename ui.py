@@ -189,7 +189,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             # for each_item in self.application.available_serice_price_options:
             #     self.my_item_list.Append(each_item)
 
-           
     def __blank_all_service_fields(self):
         """[summary]
         """
