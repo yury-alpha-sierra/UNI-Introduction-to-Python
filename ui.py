@@ -11,6 +11,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
         self.application = app
+        self.delete_or_modify = False
 
         wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
         self.Bind(wx.EVT_CLOSE, self.__my_frame_handle_EVT_CLOSE)
@@ -131,6 +132,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.AppendColumn('quantity', width=80)
         self.my_busket_item_list.AppendColumn('cost', width=80)
         self.my_busket_item_list.AppendColumn('each', width=100)
+        self.my_busket_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.__my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
         self.my_busket_boxsizer.Add(self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_service_boxsizer = wx.BoxSizer(wx.VERTICAL)
@@ -180,7 +182,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             for each_item in self.application.available_serice_price_options:
                 self.my_item_list.Append(each_item)
 
-            self.my_country_choice.SetSelection(-1)
+            if not self.delete_or_modify:
+                self.my_country_choice.SetSelection(-1)
 
     def __blank_all_service_fields(self):
         """[summary]
@@ -294,10 +297,31 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         for row in range(self.my_busket_item_list.GetItemCount()):
             number_pattern = re.compile(r'\d.{1,5}')
             number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-                ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
+        ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
             total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
             total_cost += float(''.join(number_matches))
 
         self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
         self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
+        self.my_weight_entry.SetValue('')
+
+    def __my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
+        """[summary]
+        """
+        self.delete_or_modify = True
+        index = self.my_busket_item_list.GetFirstSelected()
+
+        item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price = self.application.invoice[index]
+
+        self.my_country_choice.SetSelection(self.my_country_choice.FindString(self.application.current_country))
+
+        self.my_busket_item_list.DeleteAllItems()
+        for each_line in self.application.invoice:
+            self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
+
+
+        self.my_weight_entry.SetValue('')
+        self.my_weight_entry.WriteText(str(int(my_weight)))
+
+        self.delete_or_modify = False

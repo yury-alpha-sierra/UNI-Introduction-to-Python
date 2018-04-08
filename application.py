@@ -132,13 +132,13 @@ class Application:
         """[summary]
         """
         if self.current_weight > 0:
-            l = []
+            my_list = []
             for each_service in self.services_collection:
                 nm = each_service.get_service_name()
                 pr = each_service.get_service_price(self.current_country, self.current_weight)
                 if pr:
-                    l.append([nm, pr])
-            return l
+                    my_list.append([nm, pr])
+            return my_list
         return None
 
     def __import_country_and_zone_data(self):
