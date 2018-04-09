@@ -1,6 +1,7 @@
 """[summary]
 """
 import re
+import time
 import wx  # pylint: disable=E0611,W0401
 
 
@@ -12,6 +13,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.application = app
         self.delete_or_modify = False
+        self.weight_entry_error = False
 
         wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
         self.Bind(wx.EVT_CLOSE, self.__my_frame_handle_EVT_CLOSE)
@@ -96,7 +98,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_weigh_unit_selector.SetFont(self.my_font)
         self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.__my_weigh_unit_selector_handle_EVT_RADIOBOX)
 
-        self.my_weigh_unit_selector.SetSelection(1)
+        self.my_weigh_unit_selector.SetSelection(0)
         self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -172,12 +174,16 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 else:
                     multiplier = 1
                 self.application.current_weight = float(self.application.current_weight) * float(multiplier)
+                if self.application.current_weight < 1:
+                    self.weight_entry_error = True
+                    return
 
                 if self.application.available_serice_price_options:
                     self.application.available_serice_price_options.clear()
                 self.application.available_serice_price_options = self.application.get_available_serice_price_options()
-                for each_item in self.application.available_serice_price_options:
-                    self.my_item_list.Append(each_item)
+                if self.application.available_serice_price_options:
+                    for each_item in self.application.available_serice_price_options:
+                        self.my_item_list.Append(each_item)
 
     def __blank_all_service_fields(self):
         """[summary]
@@ -244,7 +250,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
 
-        self.__recalculate_and_update_service_price_options_display()
+        if not self.weight_entry_error:
+            self.__recalculate_and_update_service_price_options_display()
+        else:
+            self.weight_entry_error = False
 
     def __my_weight_entry_handle_EVT_CHAR(self, event):  # pylint: disable=W0613
         """[summary]
@@ -263,7 +272,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.__recalculate_and_update_service_price_options_display()
+        if not self.weight_entry_error:
+            self.__recalculate_and_update_service_price_options_display()
+        else:
+            event.Skip()
 
     def __my_weigh_unit_selector_handle_EVT_RADIOBOX(self, event):  # pylint: disable=W0613
         """[summary]

@@ -7,7 +7,6 @@ import pandas as pd
 
 class Service:
     """[summary]
-
     """
 
     def __init__(self, name, data_dir, data_file):
@@ -42,26 +41,6 @@ class Service:
                 self.data_file))
             exit(404)
         return return_dictionary
-
-    # def import_country_and_zone_data(self):
-    #     """[summary]
-
-    #     Returns:
-    #         [type] -- [description]
-    #     """
-
-    #     return_dictionary = {}
-    #     try:
-    #         with open(self.data_dir + self.country_file) as csv_file:
-    #             next(csv_file)
-    #             for each_line in csv_file.readlines():
-    #                 each_line = each_line.split(',')
-    #                 return_dictionary[each_line[0]] = each_line[1]
-    #     except FileNotFoundError:
-    #         print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
-    #             self.country_file))
-    #         exit(404)
-    #     return return_dictionary
 
     def get_zone_label(self, zone):
         """[summary]
@@ -127,8 +106,7 @@ class Service:
         try:
             zone_label = self.get_zone_label(zone)
             weight_label = self.get_weight_label(weight)
-            return float(self.zone_weight_data.get(zone_label).get(
-                str(weight_label)))
+            return float(self.zone_weight_data.get(zone_label).get(str(weight_label)))
         except(ValueError, AttributeError, TypeError):
             return None
 
