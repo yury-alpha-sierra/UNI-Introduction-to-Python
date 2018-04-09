@@ -161,7 +161,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         suffix = 'Kg'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight/1000, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
         return new_line
 
     def __recalculate_and_update_service_price_options_display(self):
@@ -172,10 +172,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             self.my_item_list.DeleteAllItems()
             if not((self.application.current_weight == '') or (self.application.current_country == '')):
                 if self.my_weigh_unit_selector.GetSelection() == 0:
-                    divisor = 1
+                    multiplier = 1000
                 else:
-                    divisor = 1000
-                self.application.current_weight = float(self.application.current_weight) / float(divisor)
+                    multiplier = 1
+                self.application.current_weight = float(self.application.current_weight) * float(multiplier)
 
                 if self.application.available_serice_price_options:
                     self.application.available_serice_price_options.clear()
@@ -288,6 +288,40 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.application.invoice.append(to_basket)
 
+        self.__repaint_busket_and_status_bar()
+
+        self.my_weight_entry.SetValue('')
+        if not self.delete_or_modify:
+            self.my_country_choice.SetSelection(-1)
+
+
+        # self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
+
+        # for each_line in self.application.invoice:
+        #     self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
+
+        # self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
+
+        # total_cost = 0
+        # total_items = 0
+
+        # for row in range(self.my_busket_item_list.GetItemCount()):
+        #     number_pattern = re.compile(r'\d.{1,5}')
+        #     number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
+        # ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
+        #     total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
+        #     total_cost += float(''.join(number_matches))
+
+        # self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
+        # self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
+        # self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
+        # self.my_weight_entry.SetValue('')
+        # if not self.delete_or_modify:
+        #   self.my_country_choice.SetSelection(-1)
+
+
+    def __repaint_busket_and_status_bar(self):
+
         self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
 
         for each_line in self.application.invoice:
@@ -309,6 +343,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
         self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
         self.my_weight_entry.SetValue('')
+        
+        # self.my_busket_item_list.DeleteAllItems()
+        
         if not self.delete_or_modify:
             self.my_country_choice.SetSelection(-1)
 
@@ -319,16 +356,28 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.delete_or_modify = True
         index = self.my_busket_item_list.GetFirstSelected()
 
-        item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price = self.application.invoice[index]
+        item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price = self.application.invoice.pop(index)
 
         self.my_country_choice.SetSelection(self.my_country_choice.FindString(self.application.current_country))
 
+        # self.application.invoice.pop(index)
+
+        if quantity > 1:
+            quantity -= 1
+            cost -= my_price
+            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+
+            self.application.invoice.append(to_basket)
+
+        # self.my_busket_item_list.DeleteAllItems()
+        # for each_line in self.application.invoice:
+        #     self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
+        
         self.my_busket_item_list.DeleteAllItems()
-        for each_line in self.application.invoice:
-            self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
+        self.__repaint_busket_and_status_bar()
 
         self.my_weight_entry.SetValue('')
         self.my_weigh_unit_selector.SetSelection(0)
-        self.my_weight_entry.WriteText(str('{0:.2f}'.format(my_weight)))
+        self.my_weight_entry.WriteText(str('{0:.2f}'.format(my_weight/1000)))
 
         self.delete_or_modify = False

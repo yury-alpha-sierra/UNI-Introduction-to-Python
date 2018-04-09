@@ -36,34 +36,32 @@ class Service:
 
         return_dictionary = {}
         try:
-            return_dictionary = pd.read_csv(
-                self.data_dir + self.data_file, header=0, index_col=0,
-                squeeze=True).to_dict()
+            return_dictionary = pd.read_csv(self.data_dir + self.data_file, header=0, index_col=0, squeeze=True).to_dict()
         except FileNotFoundError:
             print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
                 self.data_file))
             exit(404)
         return return_dictionary
 
-    def import_country_and_zone_data(self):
-        """[summary]
+    # def import_country_and_zone_data(self):
+    #     """[summary]
 
-        Returns:
-            [type] -- [description]
-        """
+    #     Returns:
+    #         [type] -- [description]
+    #     """
 
-        return_dictionary = {}
-        try:
-            with open(self.data_dir + self.country_file) as csv_file:
-                next(csv_file)
-                for each_line in csv_file.readlines():
-                    each_line = each_line.split(',')
-                    return_dictionary[each_line[0]] = each_line[1]
-        except FileNotFoundError:
-            print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
-                self.country_file))
-            exit(404)
-        return return_dictionary
+    #     return_dictionary = {}
+    #     try:
+    #         with open(self.data_dir + self.country_file) as csv_file:
+    #             next(csv_file)
+    #             for each_line in csv_file.readlines():
+    #                 each_line = each_line.split(',')
+    #                 return_dictionary[each_line[0]] = each_line[1]
+    #     except FileNotFoundError:
+    #         print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
+    #             self.country_file))
+    #         exit(404)
+    #     return return_dictionary
 
     def get_zone_label(self, zone):
         """[summary]
