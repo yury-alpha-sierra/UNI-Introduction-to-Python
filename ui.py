@@ -154,10 +154,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __prettyfy_list(self, line):
 
-        # if self.my_weigh_unit_selector.GetSelection() == 0:
-        #     suffix = 'Kg'
-        # else:
-        #     suffix = 'gr'
         suffix = 'Kg'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
@@ -183,12 +179,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 for each_item in self.application.available_serice_price_options:
                     self.my_item_list.Append(each_item)
 
-            # if self.application.available_serice_price_options:
-            #     self.application.available_serice_price_options.clear()
-            # self.application.available_serice_price_options = self.application.get_available_serice_price_options()
-            # for each_item in self.application.available_serice_price_options:
-            #     self.my_item_list.Append(each_item)
-
     def __blank_all_service_fields(self):
         """[summary]
         """
@@ -200,6 +190,32 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.DeleteAllItems()
         self.application.initialise_volatile()
         self.my_weight_entry.SetFocus()
+
+    def __repaint_busket_and_status_bar(self):
+        self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
+
+        for each_line in self.application.invoice:
+            self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
+
+        self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
+
+        total_cost = 0
+        total_items = 0
+
+        for row in range(self.my_busket_item_list.GetItemCount()):
+            number_pattern = re.compile(r'\d.{1,5}')
+            number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
+        ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
+            total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
+            total_cost += float(''.join(number_matches))
+
+        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
+        self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
+        self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
+        self.my_weight_entry.SetValue('')
+
+        if not self.delete_or_modify:
+            self.my_country_choice.SetSelection(-1)
 
     def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
@@ -294,62 +310,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         if not self.delete_or_modify:
             self.my_country_choice.SetSelection(-1)
 
-
-        # self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
-
-        # for each_line in self.application.invoice:
-        #     self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
-
-        # self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
-
-        # total_cost = 0
-        # total_items = 0
-
-        # for row in range(self.my_busket_item_list.GetItemCount()):
-        #     number_pattern = re.compile(r'\d.{1,5}')
-        #     number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-        # ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
-        #     total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
-        #     total_cost += float(''.join(number_matches))
-
-        # self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
-        # self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
-        # self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
-        # self.my_weight_entry.SetValue('')
-        # if not self.delete_or_modify:
-        #   self.my_country_choice.SetSelection(-1)
-
-
-    def __repaint_busket_and_status_bar(self):
-
-        self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
-
-        for each_line in self.application.invoice:
-            self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
-
-        self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
-
-        total_cost = 0
-        total_items = 0
-
-        for row in range(self.my_busket_item_list.GetItemCount()):
-            number_pattern = re.compile(r'\d.{1,5}')
-            number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-        ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
-            total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
-            total_cost += float(''.join(number_matches))
-
-        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
-        self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(total_cost), 3)
-        self.my_status_bar.SetStatusText('Items: {0}'.format(total_items), 2)
-        self.my_weight_entry.SetValue('')
-        
-        # self.my_busket_item_list.DeleteAllItems()
-        
-        if not self.delete_or_modify:
-            self.my_country_choice.SetSelection(-1)
-
-
     def __my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED(self, event):  # pylint: disable=W0613
         """[summary]
         """
@@ -360,8 +320,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_country_choice.SetSelection(self.my_country_choice.FindString(self.application.current_country))
 
-        # self.application.invoice.pop(index)
-
         if quantity > 1:
             quantity -= 1
             cost -= my_price
@@ -369,10 +327,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
             self.application.invoice.append(to_basket)
 
-        # self.my_busket_item_list.DeleteAllItems()
-        # for each_line in self.application.invoice:
-        #     self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
-        
         self.my_busket_item_list.DeleteAllItems()
         self.__repaint_busket_and_status_bar()
 
