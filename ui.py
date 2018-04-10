@@ -1,7 +1,6 @@
 """[summary]
 """
 import re
-import time
 import wx  # pylint: disable=E0611,W0401
 
 
@@ -200,7 +199,12 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __repaint_busket_and_status_bar(self):
         self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
 
+        i = 1
         for each_line in self.application.invoice:
+            item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line
+            item_no = i
+            i += 1
+            each_line = item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price
             self.my_busket_item_list.Append(self.__prettyfy_list(each_line))
 
         self.application.invoice = sorted(self.application.invoice, key=self.__getKey)

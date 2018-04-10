@@ -94,23 +94,6 @@ class Application:
             exit(404)
         return return_frame
 
-    # def __enter__(self):
-    #     """[summary]
-    #     Returns:
-    #         [type] -- [description]
-    #     """
-    #     return self
-
-    # def __exit__(self, exc_type, exc_val, exc_tb):
-    #     """[summary]
-    #     Arguments:
-    #         exc_type {[type]} -- [description]
-    #         exc_val {[type]} -- [description]
-    #         exc_tb {[type]} -- [description]
-    #     """
-
-    #     pass
-
     def __register_service(self, service_name, data_file):
         """[summary]
         """
