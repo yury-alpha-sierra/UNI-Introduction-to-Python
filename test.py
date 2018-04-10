@@ -92,3 +92,8 @@ if __name__ == "__main__":
     frame = MyForm()
     frame.Show()
     app.MainLoop()
+
+
+
+m = 0.
+print(isinstance(m, float))

@@ -165,6 +165,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.application.current_country = self.my_country_choice.GetString(self.my_country_choice.GetSelection())
         self.application.current_weight = self.my_weight_entry.GetValue()
+        try:
+            float(self.application.current_weight)
+        except ValueError:
+            return
         if self.application.current_country and self.application.current_weight:
             self.my_item_list.DeleteAllItems()
             if not((self.application.current_weight == '') or (self.application.current_country == '')):
