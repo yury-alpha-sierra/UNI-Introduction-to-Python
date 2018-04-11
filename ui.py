@@ -277,9 +277,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         suffix = 'Kg'
         new_line = 'Item No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
-            my_weight/1000 , suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
+            my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
 
         return new_line
+
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
