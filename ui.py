@@ -191,7 +191,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __blank_all_service_fields(self):
         """[summary]
         """
-
         self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
         self.my_country_choice.SetSelection(-1)
         self.my_weigh_unit_selector.SetSelection(1)
@@ -272,9 +271,22 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             if chr(keycode).isdigit() or keycode == 8 or keycode == 314 or keycode == 316 or keycode == 46:
                 event.Skip()
 
+    def __prettify_invoice(self, line):
+
+        item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
+
+        suffix = 'Kg'
+        new_line = 'Item No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
+            my_weight/1000 , suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
+
+        return new_line
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
+        print('--------------Invoice---------------')
+        for all_items in self.application.invoice:
+            print(self.__prettify_invoice(all_items))
+        print('-----------End Invoice---------------')
         self.__blank_all_service_fields()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613

@@ -1,7 +1,7 @@
 """[summary]
 
 """
-import re
+import regex as re
 import pandas as pd
 
 
@@ -60,22 +60,26 @@ class Service:
 
     def get_weight_label(self, weight):
         """[summary]
-
-        Arguments:
-            dictionary {[type]} -- [description]
-            weight {[type]} -- [description]
         """
 
         i = None
         for i in self.zone_weight_data.values():
             key_list = list(i.keys())
 
-        weight_number_pattern = re.compile(r'\d{1,3}')
-        weigh_unit_pattern = re.compile(r'\d{1,3}(kg)')
+        # weight_number_pattern = re.compile(r'\d{1,3}')                 # r'\d{1,3}[.]?(\d{1,2})?'
+        weight_number_pattern = re.compile(r'(\d+[\.]?\d?)')                                #r'[0-9]{1,3}[.]*([0-9]{1,2})')
+
+        # weigh_unit_pattern = re.compile(r'\d{1,3}(kg)')
+        weigh_unit_pattern = re.compile(r'[k][g]')                                    # 'kg'
         j = 0
+        number_matches = None
+        unit_matches = None
         while j < len(key_list):
             number_matches = re.findall(weight_number_pattern, key_list[j])
             unit_matches = re.findall(weigh_unit_pattern, key_list[j])
+
+            # w_n = re.findall(wn_number_pattern, key_list[j])
+            # w_u = re.findall(wu_unit_pattern, key_list[j])
 
             # if found 'kg after the number prepare to convert to gr,
             # otherwise make sure it stays in gr
@@ -106,6 +110,9 @@ class Service:
         try:
             zone_label = self.get_zone_label(zone)
             weight_label = self.get_weight_label(weight)
+
+            z_w = self.zone_weight_data.get(zone_label)
+            w_l = z_w.get(weight_label)
             return float(self.zone_weight_data.get(zone_label).get(str(weight_label)))
         except(ValueError, AttributeError, TypeError):
             return None
