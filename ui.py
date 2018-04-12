@@ -255,7 +255,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 f.write('\n---------------------------------------------------\n')
                 quantity -= 1
 
-    def __print_invoice(self,file_name):
+    def __print_invoice(self, file_name):
 
         with open(file_name, 'w') as invoice_file:
             self.__process_invoice_finacials(invoice_file)
