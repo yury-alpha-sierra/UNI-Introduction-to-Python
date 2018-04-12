@@ -50,15 +50,31 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __init_info_panel(self):
 
         self.my_info_boxsizer = wx.BoxSizer(wx.HORIZONTAL)  # | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL
-        my_info_text = wx.StaticText(self.my_info_panel, -1, style=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
+        my_info_text = wx.StaticText(self.my_info_panel, -1, style=wx.ALIGN_LEFT | wx.EXPAND)
+        my_info_font = wx.Font(18, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
+        my_info_text.SetFont(my_info_font)
+        my_message = 'Introduction\n'
+        my_info_font = wx.Font(12, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, u'sans-serif')
+        my_info_text.SetFont(my_info_font)
+        my_message = my_message + 'This program was written by Yury Gurevich as a part of submission for Assignment2 project.\n\n'
+        my_message = my_message + '\nThis software assists postal workers in task of vending stamps for the following six kinds of international post based on the price guide:\n'
+        my_message = my_message + '\n• Economy Letter;'
+        my_message = my_message + '\n• Express Letter;'
+        my_message = my_message + '\n• Economy Parcel_By Air;'
+        my_message = my_message + '\n• Economy Parcel_By Sea;'
+        my_message = my_message + '\n• Standard Parcel;'
+        my_message = my_message + '\n• Express Parcel.'
+        my_message = my_message + '\n\n\nSELECT FUNCTION FROM FUNCTION SELECTION MENU ABOVE.'
 
-        my_message = 'this is an introductory message\n to finctionality of the postal service\n application'
         my_info_text.SetLabel(my_message)
+
+
+        self.my_info_boxsizer.Add(my_info_text, 1, wx.ALL | wx.EXPAND, border=3)
 
         self.my_info_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
         self.my_info_panel.SetBackgroundColour(self.my_info_panel_colour)
 
-        my_info_font = wx.Font(18, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
+        my_info_font = wx.Font(12, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
         my_info_text.SetFont(my_info_font)
 
     def __init_admin_panel(self):
@@ -255,8 +271,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 f.write('\n---------------------------------------------------\n')
                 quantity -= 1
 
-    def __print_invoice(self, file_name):
-
+    def __print_invoice(self):
+        now = dt.datetime.now()
+        file_name = now.strftime("%Y-%m-%d %H-%M-%S")
+        file_name = str(file_name) + ' ' + str(self.application.get_next_sales_number()) + ' invoice.txt'
         with open(file_name, 'w') as invoice_file:
             self.__process_invoice_finacials(invoice_file)
             self.__process_invoice_stamps(invoice_file)
@@ -305,10 +323,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        now = dt.datetime.now()
-        file_name = str(now.year) + '-' + str(now.month) + '-' + str(now.day) + '_' + str(now.hour) + '-' + str(now.minute) + '_'+ str(self.application.get_next_sales_number()) + '-invoice.txt'
-
-        self.__print_invoice(file_name)
+        self.__print_invoice()
         self.__blank_all_service_fields()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
