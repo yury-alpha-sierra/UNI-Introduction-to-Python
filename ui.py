@@ -230,6 +230,30 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         if not self.delete_or_modify:
             self.my_country_choice.SetSelection(-1)
 
+    def __process_invoice_finacials(self):
+
+        suffix = 'Kg'
+        print('--------------Invoice---------------\n\n')
+        for each_line in self.application.invoice:
+            item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line
+            new_line = 'Item No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
+                my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
+            print(new_line)
+        print('\n\n-----------End Invoice---------------')
+
+    def __process_invoice_stamps(self):
+
+        print('\n\n-----------Purchased Stamps-----------\n')
+
+        for each_line in self.application.invoice:
+            print('---------------------------------------------------\n')
+            item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line  # pylint: disable=W0612
+            while quantity > 0:
+                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.1f}'.format(my_weight/1000)
+                print(new_line)
+                print('---------------------------------------------------\n')
+                quantity -= 1
+
     def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
         """
@@ -271,23 +295,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             if chr(keycode).isdigit() or keycode == 8 or keycode == 314 or keycode == 316 or keycode == 46:
                 event.Skip()
 
-    def __prettify_invoice(self, line):
-
-        item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-
-        suffix = 'Kg'
-        new_line = 'Item No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
-            my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
-
-        return new_line
-
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        print('--------------Invoice---------------')
-        for all_items in self.application.invoice:
-            print(self.__prettify_invoice(all_items))
-        print('-----------End Invoice---------------')
+        self.__process_invoice_finacials()
+        self.__process_invoice_stamps()
         self.__blank_all_service_fields()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
