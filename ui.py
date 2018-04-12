@@ -1,5 +1,6 @@
 """[summary]
 """
+import datetime as dt
 import re
 import wx  # pylint: disable=E0611,W0401
 
@@ -230,29 +231,35 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         if not self.delete_or_modify:
             self.my_country_choice.SetSelection(-1)
 
-    def __process_invoice_finacials(self):
+    def __process_invoice_finacials(self, f):
 
         suffix = 'Kg'
-        print('--------------Invoice---------------\n\n')
+        f.write('--------------Invoice---------------\n\n')
         for each_line in self.application.invoice:
             item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line
-            new_line = 'Item No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
-                my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]'.format(my_price)
-            print(new_line)
-        print('\n\n-----------End Invoice---------------')
+            new_line = '\nItem No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
+                my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]\n'.format(my_price)
+            f.write(new_line)
+        f.write('\n\n-----------End Invoice---------------')
 
-    def __process_invoice_stamps(self):
+    def __process_invoice_stamps(self, f):
 
-        print('\n\n-----------Purchased Stamps-----------\n')
+        f.write('\n\n-----------Purchased Stamps-----------\n')
 
         for each_line in self.application.invoice:
-            print('---------------------------------------------------\n')
+            f.write('---------------------------------------------------\n')
             item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line  # pylint: disable=W0612
             while quantity > 0:
-                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.1f}'.format(my_weight/1000)
-                print(new_line)
-                print('---------------------------------------------------\n')
+                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.2f}'.format(my_weight/1000)
+                f.write(new_line)
+                f.write('\n---------------------------------------------------\n')
                 quantity -= 1
+
+    def __print_invoice(self,file_name):
+
+        with open(file_name, 'w') as invoice_file:
+            self.__process_invoice_finacials(invoice_file)
+            self.__process_invoice_stamps(invoice_file)
 
     def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
@@ -298,8 +305,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.__process_invoice_finacials()
-        self.__process_invoice_stamps()
+        now = dt.datetime.now()
+        file_name = str(now.year) + '-' + str(now.month) + '-' + str(now.day) + '_' + str(now.hour) + '-' + str(now.minute) + '_'+ str(self.application.get_next_sales_number()) + '-invoice.txt'
+
+        self.__print_invoice(file_name)
         self.__blank_all_service_fields()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
