@@ -164,6 +164,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.Layout()
 
         self.my_service_panel.SetSizer(self.my_service_boxsizer)
+        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.my_service_panel.Layout()
         self.my_weight_entry.SetFocus()
 
@@ -215,6 +216,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.DeleteAllItems()
         self.application.initialise_volatile()
         self.my_weight_entry.SetFocus()
+        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
+        self.my_status_bar.SetStatusText('Total: ${0:.2f}'.format(0), 3)
+        self.my_status_bar.SetStatusText('Items: {0}'.format(0), 2)
 
     def __repaint_busket_and_status_bar(self):
         self.application.invoice = sorted(self.application.invoice, key=self.__getKey)
@@ -272,12 +276,24 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 quantity -= 1
 
     def __print_invoice(self):
+
         now = dt.datetime.now()
-        file_name = now.strftime("%Y-%m-%d %H-%M-%S")
+        file_name = now.strftime('%Y-%m-%d %H-%M-%S')
         file_name = str(file_name) + ' ' + str(self.application.get_next_sales_number()) + ' invoice.txt'
         with open(file_name, 'w') as invoice_file:
             self.__process_invoice_finacials(invoice_file)
             self.__process_invoice_stamps(invoice_file)
+
+    def __create_sales_record(self):
+
+        now = dt.datetime.now()
+        file_name = self.application.data_base_directory + self.application.sales_history_file
+        with open(file_name, 'a') as invoice_file:  # pylint: disable=W0622
+            for each_line in self.application.invoice:
+                item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line # pylint: disable=W0612
+                new_line = '\n'+ str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y/%m/%d %H:%M:%S') + ',' + \
+                    my_type.lower() + ',' + str('{0:.2f}'.format(my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.lower() + ',' + str(quantity) + ',' + str(cost)
+                invoice_file.write(new_line)
 
     def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
@@ -323,7 +339,14 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
-        self.__print_invoice()
+        if self.application.invoice:
+            self.__print_invoice()
+            self.__create_sales_record()
+        self.application.invoice = None
+        self.application.sales_history = None
+        self.application.sales_history = self.application.import_sales_history()
+        nn = self.application.sales_history.index.max()
+        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.__blank_all_service_fields()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613

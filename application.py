@@ -36,7 +36,7 @@ class Application:
         self.initialise_volatile()
 
         self.country_and_zone_data = self.__import_country_and_zone_data()
-        self.sales_history = self.__import_sales_history()
+        self.sales_history = self.import_sales_history()
 
         self.__register_service('Economy Letter', 'Economy Letters Price Guide ($).csv')
         self.__register_service('Economy Parcel by Air', 'Economy Parcel Price Guide_by Air ($).csv')
@@ -81,8 +81,8 @@ class Application:
         except:
             return None
 
-    def __import_sales_history(self):
-        """
+    def import_sales_history(self):
+        """[summary]
         """
         try:
             return_frame = pd.read_csv(
@@ -126,7 +126,6 @@ class Application:
 
     def __import_country_and_zone_data(self):
         """[summary]
-
         """
 
         return_dictionary = {}

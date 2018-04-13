@@ -55,3 +55,7 @@ assignment2_main YURY 6_04_2018 10_31_24.py
 __pycache__*
 
 ~$quirements.docx
+data/sales_history.csv.bak
+data/sales_history.csv
+
+.gitignore
