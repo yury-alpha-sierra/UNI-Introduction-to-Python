@@ -14,3 +14,16 @@ sale_id,date_time,type,weight,destination,postage method,quantity,cost1,2016-01
 2689,2018/04/13 10:47:05,parcel,0.03,Bahrain,Standard parcel,1,33.36
 2690,2018/04/13 10:48:36,parcel,3.00,Brunei darussalam,Standard parcel,1,72.9
 2691,2018/04/13 10:48:43,parcel,0.06,Belgium,Standard parcel,1,32.99
+2692,2018/04/13 11:03:22,parcel,5.00,Germany,Express parcel,1,118.94
+2692,2018/04/13 11:03:22,parcel,0.06,Canada,Standard parcel,1,23.72
+2693,2018/04/13 11:06:19,parcel,3.00,China,Express parcel,2,159.16
+2694,2018/04/13 13:27:58,parcel,5.00,Germany,Express parcel,2,237.88
+2695,2018/04/13 13:38:47,parcel,5.00,Argentina,Economy parcel,2,72.63
+2695,2018/04/13 13:38:47,parcel,5.00,Argentina,Economy parcel,1,72.63
+2695,2018/04/13 13:38:47,parcel,5.00,Argentina,Express parcel,1,150.29
+2696,2018/04/13 13:41:07,parcel,3.00,Argentina,Express parcel,1,121.22
+2696,2018/04/13 13:41:07,parcel,3.00,Argentina,Express parcel,1,121.22
+2696,2018/04/13 13:41:07,parcel,4.00,France,Standard parcel,1,113.94
+2696,2018/04/13 13:41:07,parcel,5.00,Germany,Express parcel,1,118.94
+2697,2018/04/13 13:44:33,parcel,0.68,Argentina,Standard parcel,1,57.65
+2697,2018/04/13 13:44:33,parcel,0.07,Bahrain,Express parcel,1,61.87

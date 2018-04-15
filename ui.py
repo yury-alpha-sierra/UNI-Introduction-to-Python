@@ -35,6 +35,10 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_menu_bar.SetFont(self.my_font)
         self.SetMenuBar(self.my_menu_bar)
 
+        self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
+        self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
+        self.my_status_bar.SetStatusText('')
+
         self.my_service_panel.Hide()
         self.my_admin_panel.Hide()
 
@@ -68,6 +72,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         my_info_text.SetLabel(my_message)
 
+        self.my_status_bar.SetStatusText('')
 
         self.my_info_boxsizer.Add(my_info_text, 1, wx.ALL | wx.EXPAND, border=3)
 
@@ -85,6 +90,57 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_admin_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
         self.my_admin_panel.SetBackgroundColour(self.my_admin_panel_colour)
 
+        self.my_admin_options_boxsizer = wx.BoxSizer(wx.VERTICAL)
+
+        my_info_msg = wx.StaticText(self.my_admin_panel, -1, style=wx.ALIGN_LEFT | wx.EXPAND)
+        my_info_msg.SetFont(self.my_font)
+        my_info_msg.SetLabel('Select function:')
+        self.my_admin_options_boxsizer.Add(my_info_msg, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
+
+        admin_choices = \
+        ['The gross sales amount of different years', 'The customer flow during a day (number of sales occur at different time (hours) of a day', \
+            'The popularity of postage method for letter and parcel (number of purchased stamps with different postage methods)', 'The top 5 most popular destination countries including any postage']
+
+        self.my_admin_function_selector = wx.RadioBox(self.my_admin_panel, id=wx.ID_ANY, choices=admin_choices, majorDimension=0, style=wx.RA_SPECIFY_ROWS | wx.NO_BORDER)
+        self.my_admin_function_selector.SetFont(self.my_font)
+        self.my_admin_options_boxsizer.Add(self.my_admin_function_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
+
+        self.admin_process_options_button = wx.Button(self.my_admin_panel, label='process option')
+        self.admin_process_options_button.SetFont(self.my_font)
+        self.admin_process_options_button.Bind(wx.EVT_BUTTON, self.admin_process_options_button_handle_EVT_BUTTON)
+        self.my_admin_options_boxsizer.Add(self.admin_process_options_button, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=10)
+
+
+        self.my_status_bar.SetStatusText('')
+
+        self.SetSizer(self.my_admin_options_boxsizer)
+        self.Layout()
+
+    def __process_admin_panel_switch(self, val):
+
+        return {1: 'gross_sales_amount', 2: 'customer_flow', 3: 'postage_method_popularity', 4: 'top_5'}.get(val, None)
+
+
+    def admin_process_options_button_handle_EVT_BUTTON(self, event):     # pylint: disable=W0613
+
+        sel = self.my_admin_function_selector.GetSelection()
+        fun = self.__process_admin_panel_switch(sel+1)
+        cmd = 'self.' + fun + '()'
+        # print(cmd)
+        exec(cmd) # pylint: disable=W0122
+
+    def gross_sales_amount(self):
+        print('gross_sales_amount_FUNCTION')
+
+    def customer_flow(self):
+        print('customer_flow_FUNCTION')
+
+    def postage_method_popularity(self):
+        print('postage_method_popularity_FUNCTION')
+
+    def top_5(self):
+        print('top_5_FUNCTION')
+
     def __init_service_panel(self):
         """[summary]
         """
@@ -94,9 +150,6 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_service_panel_colour = wx.Colour(230, 240, 255, alpha=wx.ALPHA_OPAQUE)
         self.my_service_panel.SetBackgroundColour(self.my_service_panel_colour)
-
-        self.my_status_bar = self.CreateStatusBar(4)  # pylint: disable=unused-variable
-        self.my_status_bar.SetStatusWidths([200, 300, 200, 100])
 
         self.my_weight_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.my_weight_label = wx.StaticText(self.my_service_panel, id=wx.ID_ANY, label="  Enter item weight:")
@@ -291,9 +344,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         with open(file_name, 'a') as invoice_file:  # pylint: disable=W0622
             for each_line in self.application.invoice:
                 item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line # pylint: disable=W0612
-                new_line = '\n'+ str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y/%m/%d %H:%M:%S') + ',' + \
-                    my_type.lower() + ',' + str('{0:.2f}'.format(my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.lower() + ',' + str(quantity) + ',' + str(cost)
-                invoice_file.write(new_line)
+                while quantity > 0:
+                    new_line = '\n'+ str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y/%m/%d %H:%M:%S') + ',' + \
+                        my_type.lower() + ',' + str('{0:.2f}'.format(my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.lower() + ',' + str(1) + ',' + str(my_price)
+                    invoice_file.write(new_line)
+                    quantity -= 1
 
     def __my_frame_handle_EVT_CLOSE(self, event):  # pylint: disable=W0613
         """[summary]
@@ -307,6 +362,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_info_panel.Hide()
         self.my_admin_panel.Hide()
         self.my_service_panel.Show()
+        self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
 
         self.Layout()
 
@@ -317,6 +373,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_info_panel.Hide()
         self.my_service_panel.Hide()
         self.my_admin_panel.Show()
+        self.my_status_bar.SetStatusText('')
 
         self.Layout()
 
@@ -345,7 +402,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.application.invoice = None
         self.application.sales_history = None
         self.application.sales_history = self.application.import_sales_history()
-        nn = self.application.sales_history.index.max()
+        # nn = self.application.sales_history.index.max()
         self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.__blank_all_service_fields()
 

@@ -3,7 +3,7 @@
 from application import Application
 
 
-POSTAGE_SERVICE = Application('Postal Service', './/data//', 'Countries and Zones.csv', 'sales_history.csv')
+POSTAL_SERVICE = Application('Postal Service', './/data//', 'Countries and Zones.csv', 'sales_history.csv')
 
 # sales_num = 2043 #2046 2043
 # s_history = ()
