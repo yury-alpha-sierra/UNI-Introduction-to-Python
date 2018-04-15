@@ -1,7 +1,12 @@
 """[summary]
 """
-import datetime as dt
+
 import re
+import datetime as dt
+import numpy  as np
+
+import pandas as pn
+
 import wx  # pylint: disable=E0611,W0401
 
 
@@ -10,6 +15,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     """
 
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
+
+        self.test1 = None
 
         self.application = app
         self.delete_or_modify = False
@@ -120,17 +127,20 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         return {1: 'gross_sales_amount', 2: 'customer_flow', 3: 'postage_method_popularity', 4: 'top_5'}.get(val, None)
 
-
     def admin_process_options_button_handle_EVT_BUTTON(self, event):     # pylint: disable=W0613
 
         sel = self.my_admin_function_selector.GetSelection()
-        fun = self.__process_admin_panel_switch(sel+1)
+        fun = self.__process_admin_panel_switch(sel+1)  #switch is base 1, my_admin_function_selector is base 0, normalising here
         cmd = 'self.' + fun + '()'
-        # print(cmd)
+
         exec(cmd) # pylint: disable=W0122
 
     def gross_sales_amount(self):
-        print('gross_sales_amount_FUNCTION')
+
+        self.test1 = pn.pivot_table(self.application.sales_history,
+                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.year)],
+                                    values=['cost'], aggfunc=np.sum)
+        print(self.test1)
 
     def customer_flow(self):
         print('customer_flow_FUNCTION')
@@ -139,7 +149,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         print('postage_method_popularity_FUNCTION')
 
     def top_5(self):
-        print('top_5_FUNCTION')
+
+        self.test1 = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum)
+        print(self.test1)
 
     def __init_service_panel(self):
         """[summary]
