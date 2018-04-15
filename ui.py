@@ -123,14 +123,13 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.SetSizer(self.my_admin_options_boxsizer)
         self.Layout()
 
-    def __process_admin_panel_switch(self, val):
-
-        return {1: 'gross_sales_amount', 2: 'customer_flow', 3: 'postage_method_popularity', 4: 'top_5'}.get(val, None)
-
     def admin_process_options_button_handle_EVT_BUTTON(self, event):     # pylint: disable=W0613
 
+        def process_admin_panel_switch(val):
+            return {1: 'gross_sales_amount', 2: 'customer_flow', 3: 'postage_method_popularity', 4: 'top_5'}.get(val, None)
+
         sel = self.my_admin_function_selector.GetSelection()
-        fun = self.__process_admin_panel_switch(sel+1)  #switch is base 1, my_admin_function_selector is base 0, normalising here
+        fun = process_admin_panel_switch(sel+1)  #switch is base 1, my_admin_function_selector is base 0, normalising here
         cmd = 'self.' + fun + '()'
 
         exec(cmd) # pylint: disable=W0122
@@ -143,7 +142,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         print(self.test1)
 
     def customer_flow(self):
-        print('customer_flow_FUNCTION')
+
+        self.test1 = pn.pivot_table(self.application.sales_history,
+                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.hour)],
+                                    values=['sale_id'], aggfunc={'quantity':len})
+        print(self.test1)
 
     def postage_method_popularity(self):
         print('postage_method_popularity_FUNCTION')
@@ -151,7 +154,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def top_5(self):
 
         self.test1 = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum)
-        print(self.test1)
+
+        self.test1.head(n=5)
+
 
     def __init_service_panel(self):
         """[summary]
@@ -357,8 +362,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             for each_line in self.application.invoice:
                 item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line # pylint: disable=W0612
                 while quantity > 0:
-                    new_line = '\n'+ str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y/%m/%d %H:%M:%S') + ',' + \
-                        my_type.lower() + ',' + str('{0:.2f}'.format(my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.lower() + ',' + str(1) + ',' + str(my_price)
+                    new_line = '\n' + str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y-%m-%d %H:%M:00') + ',' + my_type.lower() + ',' + str('{0:.2f}'.format(
+                        my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.capitalize() + ',' + str(1) + ',' + str(my_price)
                     invoice_file.write(new_line)
                     quantity -= 1
 
