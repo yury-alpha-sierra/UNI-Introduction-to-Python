@@ -4,7 +4,6 @@
 import regex as re
 import pandas as pd
 
-
 class Service:
     """[summary]
     """

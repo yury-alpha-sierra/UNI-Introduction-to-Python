@@ -3,7 +3,6 @@
 
 import pandas as pd
 import wx
-
 from ui import Ui
 from service import Service
 

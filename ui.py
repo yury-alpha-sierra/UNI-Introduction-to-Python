@@ -4,11 +4,8 @@
 import re
 import datetime as dt
 import numpy  as np
-
 import pandas as pn
-
 import wx  # pylint: disable=E0611,W0401
-
 
 class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     """[summary]
@@ -16,7 +13,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __init__(self, name, parent, id, app):  # pylint: disable=W0622
 
-        self.test1 = None
+        self.out_df = None
 
         self.application = app
         self.delete_or_modify = False
@@ -112,10 +109,16 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_admin_function_selector.SetFont(self.my_font)
         self.my_admin_options_boxsizer.Add(self.my_admin_function_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
-        self.admin_process_options_button = wx.Button(self.my_admin_panel, label='process option')
+        self.admin_process_options_button = wx.Button(self.my_admin_panel, label='run selection')
         self.admin_process_options_button.SetFont(self.my_font)
         self.admin_process_options_button.Bind(wx.EVT_BUTTON, self.admin_process_options_button_handle_EVT_BUTTON)
         self.my_admin_options_boxsizer.Add(self.admin_process_options_button, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=10)
+
+        self.my_admin_report_list = wx.ListCtrl(self.my_admin_panel, style=wx.LC_REPORT, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 250])
+
+        self.my_admin_report_list.SetFont(self.my_font)
+        self.my_admin_report_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.__my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
+        self.my_admin_options_boxsizer.Add(self.my_admin_report_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
 
         self.my_status_bar.SetStatusText('')
@@ -136,33 +139,52 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def gross_sales_amount(self):
 
-        self.test1 = pn.pivot_table(self.application.sales_history,
-                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.year)],
-                                    values=['cost'], aggfunc=np.sum)
-        print(self.test1)
+        self.my_admin_report_list.ClearAll()
+        self.out_df = pn.pivot_table(self.application.sales_history, index=[(pn.to_datetime(
+            self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.year)], values=['cost'], aggfunc=np.sum)
+
+        self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
+        self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
+
+        new_line = zip(self.out_df.index.tolist(), self.out_df.values.tolist())
+        for each_line in new_line:
+            new_ndx, new_val = each_line
+            new_val1 = '${0:,.2f}'.format(round(new_val[0], 2))
+            self.my_admin_report_list.Append([new_ndx, new_val1])
 
     def customer_flow(self):
 
-        # self.test1 = pn.pivot_table(self.application.sales_history,
-        #                             index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.hour)],
-        #                             values=['sale_id'], aggfunc={'quantity':len})
-        self.test1 = pn.pivot_table(self.application.sales_history,
+        self.my_admin_report_list.ClearAll()
+        self.out_df = pn.pivot_table(self.application.sales_history,
                                     index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.hour)],
                                     values=['sale_id'], aggfunc={'quantity':len})
-        print(self.test1)
+        print(self.out_df)
 
     def postage_method_popularity(self):
-        print('postage_method_popularity_FUNCTION')
 
-        self.test1 = pn.pivot_table(self.application.sales_history, index=['postage method'], values=['quantity'], aggfunc=np.sum)
+        self.out_df = pn.pivot_table(self.application.sales_history, index=['postage method'], values=['quantity'], aggfunc=np.sum)
+        self.my_admin_report_list.ClearAll()
+        self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
+        self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
 
-        print(self.test1)
+        new_line = zip(self.out_df.index.tolist(), self.out_df.values.tolist())
+        for each_line in new_line:
+            new_ndx, new_val = each_line
+            new_val1 = '{0:,}'.format(round(new_val[0], 2))
+            self.my_admin_report_list.Append([new_ndx, new_val1])
 
     def top_5(self):
 
-        self.test1 = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum)
+        self.out_df = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum).head(n=5)
+        self.my_admin_report_list.ClearAll()
+        self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
+        self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
 
-        print(self.test1.head(n=5))
+        new_line = zip(self.out_df.index.tolist(), self.out_df.values.tolist())
+        for each_line in new_line:
+            new_ndx, new_val = each_line
+            new_val1 = '${0:,.2f}'.format(round(new_val[0], 2))
+            self.my_admin_report_list.Append([new_ndx, new_val1])
 
     def __init_service_panel(self):
         """[summary]
@@ -427,6 +449,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
 
         self.__recalculate_and_update_service_price_options_display()
+
     def __my_weight_entry_handle_EVT_CHAR(self, event):  # pylint: disable=W0613
         """[summary]
         """
