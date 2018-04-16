@@ -4,6 +4,7 @@
 import regex as re
 import pandas as pd
 
+
 class Service:
     """[summary]
     """
@@ -34,7 +35,8 @@ class Service:
 
         return_dictionary = {}
         try:
-            return_dictionary = pd.read_csv(self.data_dir + self.data_file, header=0, index_col=0, squeeze=True).to_dict()
+            return_dictionary = pd.read_csv(self.data_dir + self.data_file, header=0,
+                                            index_col=0, squeeze=True).to_dict()
         except FileNotFoundError:
             print('File "{}" could not be found. Please, make sure it exists and you have rights to read it.\nProgram will terminate now.'.format(  # pylint: disable=C0301
                 self.data_file))

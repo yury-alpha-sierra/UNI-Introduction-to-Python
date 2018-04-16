@@ -13,10 +13,6 @@ class Application:
 
     def __init__(self, name, data_dir, file_name, history):
         """[summary]
-
-        Arguments:
-            name {[type]} -- [description]
-            data_dir {[type]} -- [description]
         """
         self.POSTAGE_SERVICE_UI = None
         self.FRAME = None

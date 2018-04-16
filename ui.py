@@ -3,9 +3,10 @@
 
 import re
 import datetime as dt
-import numpy  as np
+import numpy as np
 import pandas as pn
 import wx  # pylint: disable=E0611,W0401
+
 
 class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     """[summary]
@@ -19,7 +20,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.delete_or_modify = False
         self.weight_entry_error = False
 
-        wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
+        wx.Frame.__init__(self, parent, id, name, style=wx.DEFAULT_FRAME_STYLE & ~(
+            wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX), size=(1000, 600))
         self.Bind(wx.EVT_CLOSE, self.__my_frame_handle_EVT_CLOSE)
 
         self.my_font = wx.Font(14, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, u'sans-serif')
@@ -101,25 +103,31 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         my_info_msg.SetLabel('Select function:')
         self.my_admin_options_boxsizer.Add(my_info_msg, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
-        admin_choices = \
-        ['The gross sales amount of different years', 'The customer flow during a day (number of sales occur at different time (hours) of a day', \
-            'The popularity of postage method for letter and parcel (number of purchased stamps with different postage methods)', 'The top 5 most popular destination countries including any postage']
+        admin_choices = [
+            'The gross sales amount of different years',
+            'The customer flow during a day (number of sales occur at different time (hours) of a day',
+            'The popularity of postage method for letter and parcel (number of purchased stamps with different postage methods)',
+            'The top 5 most popular destination countries including any postage']
 
-        self.my_admin_function_selector = wx.RadioBox(self.my_admin_panel, id=wx.ID_ANY, choices=admin_choices, majorDimension=0, style=wx.RA_SPECIFY_ROWS | wx.NO_BORDER)
+        self.my_admin_function_selector = wx.RadioBox(
+            self.my_admin_panel, id=wx.ID_ANY, choices=admin_choices, majorDimension=0, style=wx.RA_SPECIFY_ROWS | wx.NO_BORDER)
         self.my_admin_function_selector.SetFont(self.my_font)
-        self.my_admin_options_boxsizer.Add(self.my_admin_function_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
+        self.my_admin_options_boxsizer.Add(self.my_admin_function_selector, 0,
+                                           wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.admin_process_options_button = wx.Button(self.my_admin_panel, label='run selection')
         self.admin_process_options_button.SetFont(self.my_font)
         self.admin_process_options_button.Bind(wx.EVT_BUTTON, self.admin_process_options_button_handle_EVT_BUTTON)
-        self.my_admin_options_boxsizer.Add(self.admin_process_options_button, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=10)
+        self.my_admin_options_boxsizer.Add(self.admin_process_options_button, 0,
+                                           wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL, border=10)
 
-        self.my_admin_report_list = wx.ListCtrl(self.my_admin_panel, style=wx.LC_REPORT, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 250])
+        self.my_admin_report_list = wx.ListCtrl(
+            self.my_admin_panel, style=wx.LC_REPORT, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 250])
 
         self.my_admin_report_list.SetFont(self.my_font)
         self.my_admin_report_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.__my_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
-        self.my_admin_options_boxsizer.Add(self.my_admin_report_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
-
+        self.my_admin_options_boxsizer.Add(self.my_admin_report_list, 10,
+                                           wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_status_bar.SetStatusText('')
 
@@ -132,10 +140,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             return {1: 'gross_sales_amount', 2: 'customer_flow', 3: 'postage_method_popularity', 4: 'top_5'}.get(val, None)
 
         sel = self.my_admin_function_selector.GetSelection()
-        fun = process_admin_panel_switch(sel+1)  #switch is base 1, my_admin_function_selector is base 0, normalising here
+        # switch is base 1, my_admin_function_selector is base 0, normalising here
+        fun = process_admin_panel_switch(sel+1)
         cmd = 'self.' + fun + '()'
 
-        exec(cmd) # pylint: disable=W0122
+        exec(cmd)  # pylint: disable=W0122
 
     def gross_sales_amount(self):
 
@@ -156,13 +165,28 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
         self.my_admin_report_list.ClearAll()
         self.out_df = pn.pivot_table(self.application.sales_history,
-                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.hour)],
-                                    values=['sale_id'], aggfunc={'quantity':len})
-        print(self.out_df)
+                                     index=[(pn.to_datetime(
+                                         self.application.sales_history['date_time'],
+                                         format='%d/%m/%Y %H:%M').dt.hour)],
+                                     values=['quantity'],
+                                     aggfunc=np.sum)
+
+        self.my_admin_report_list.ClearAll()
+        self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
+        self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
+
+        new_line = zip(self.out_df.index.tolist(), self.out_df.values.tolist())
+        for each_line in new_line:
+            new_ndx, new_val = each_line
+            new_val1 = '{0:,}'.format(round(new_val[0], 2))
+            self.my_admin_report_list.Append([new_ndx, new_val1])
 
     def postage_method_popularity(self):
 
-        self.out_df = pn.pivot_table(self.application.sales_history, index=['postage method'], values=['quantity'], aggfunc=np.sum)
+        self.out_df = pn.pivot_table(
+            self.application.sales_history, index=['postage method'],
+            values=['quantity'],
+            aggfunc=np.sum)
         self.my_admin_report_list.ClearAll()
         self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
         self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
@@ -175,7 +199,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def top_5(self):
 
-        self.out_df = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum).head(n=5)
+        self.out_df = pn.pivot_table(
+            self.application.sales_history, index=['destination'],
+            values=['quantity', 'cost'],
+            aggfunc=np.sum).head(
+            n=5)
         self.my_admin_report_list.ClearAll()
         self.my_admin_report_list.AppendColumn(self.out_df.index.name, width=230)
         self.my_admin_report_list.AppendColumn(self.out_df.columns.values.tolist()[0], width=150)
@@ -207,7 +235,9 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_weight_entry.Bind(wx.EVT_CHAR, self.__my_weight_entry_handle_EVT_CHAR)
         self.my_weight_entry.Bind(wx.EVT_TEXT, self.__weight_entry_handle_EVT_CHOICE)
         self.my_weight_boxsizer.Add(self.my_weight_entry, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, 10)
-        self.my_weigh_unit_selector = wx.RadioBox(self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"], majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+        self.my_weigh_unit_selector = wx.RadioBox(
+            self.my_service_panel, id=wx.ID_ANY, choices=["Kg", "gr"],
+            majorDimension=2, style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
         self.my_weight_boxsizer.AddSpacer(15)
         self.my_weigh_unit_selector.SetFont(self.my_font)
         self.my_weigh_unit_selector.Bind(wx.EVT_RADIOBOX, self.__my_weigh_unit_selector_handle_EVT_RADIOBOX)
@@ -216,16 +246,21 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_weight_boxsizer.Add(self.my_weigh_unit_selector, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL, border=10)
 
         self.my_country_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_country_label = wx.StaticText(self.my_service_panel, id=wx.ID_ANY, label="  Select destination country: ")
+        self.my_country_label = wx.StaticText(self.my_service_panel, id=wx.ID_ANY,
+                                              label="  Select destination country: ")
         self.my_country_label.SetFont(self.my_font)
         self.my_country_boxsizer.Add(self.my_country_label, 0, border=30)
-        self.my_country_choice = wx.Choice(self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize, choices=list(self.application.country_and_zone_data.keys()), style=0)
+        self.my_country_choice = wx.Choice(
+            self.my_service_panel, id=wx.ID_ANY, size=wx.DefaultSize,
+            choices=list(self.application.country_and_zone_data.keys()),
+            style=0)
         self.my_country_choice.SetFont(self.my_font)
         self.my_country_choice.Bind(wx.EVT_CHOICE, self.__country_choice_handle_EVT_CHOICE)
         self.my_country_boxsizer.Add(self.my_country_choice, 0, border=3)
 
         self.my_item_list_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_item_list = wx.ListCtrl(self.my_service_panel, style=wx.LC_REPORT, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 200])
+        self.my_item_list = wx.ListCtrl(self.my_service_panel, style=wx.LC_REPORT,
+                                        id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 200])
         self.my_item_list.AppendColumn('method', width=230)
         self.my_item_list.AppendColumn('price', width=100)
         self.my_item_list.SetFont(self.my_font)
@@ -236,10 +271,13 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_next_button = wx.Button(self.my_service_panel, label='print receipt and get ready for next customer')
         self.my_next_button.SetFont(self.my_font)
         self.my_next_button.Bind(wx.EVT_BUTTON, self.__my_next_button_handle_EVT_BUTTON)
-        self.my_buttons_boxsizer.Add(self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
+        self.my_buttons_boxsizer.Add(self.my_next_button, 10, wx.ALIGN_CENTER_VERTICAL |
+                                     wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_busket_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.my_busket_item_list = wx.ListCtrl(self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES, id=wx.ID_ANY, pos=wx.DefaultPosition, size=[900, 150])
+        self.my_busket_item_list = wx.ListCtrl(
+            self.my_service_panel, style=wx.LC_REPORT | wx.LC_VRULES, id=wx.ID_ANY, pos=wx.DefaultPosition,
+            size=[900, 150])
         self.my_busket_item_list.AppendColumn('item no', width=60)
         self.my_busket_item_list.AppendColumn('type', width=70)
         self.my_busket_item_list.AppendColumn('method', width=90)
@@ -248,15 +286,20 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.my_busket_item_list.AppendColumn('quantity', width=80)
         self.my_busket_item_list.AppendColumn('cost', width=80)
         self.my_busket_item_list.AppendColumn('each', width=100)
-        self.my_busket_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.__my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
-        self.my_busket_boxsizer.Add(self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
+        self.my_busket_item_list.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
+                                      self.__my_busket_item_list_handle_EVT_LIST_ITEM_ACTIVATED)
+        self.my_busket_boxsizer.Add(self.my_busket_item_list, 10, wx.ALIGN_CENTER_VERTICAL |
+                                    wx.ALIGN_CENTER_HORIZONTAL | wx.EXPAND)
 
         self.my_service_boxsizer = wx.BoxSizer(wx.VERTICAL)
         self.my_service_boxsizer.Add(self.my_weight_boxsizer, 1, wx.ALIGN_TOP | wx.ALL | wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_country_boxsizer, 1, wx.ALIGN_BOTTOM | wx.ALL| wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_item_list_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_busket_item_list, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
-        self.my_service_boxsizer.Add(self.my_buttons_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_country_boxsizer, 1, wx.ALIGN_BOTTOM | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_item_list_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL |
+                                     wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_busket_item_list, 1, wx.ALIGN_CENTER_VERTICAL |
+                                     wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
+        self.my_service_boxsizer.Add(self.my_buttons_boxsizer, 1, wx.ALIGN_CENTER_VERTICAL |
+                                     wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, border=3)
 
         self.SetSizer(self.my_panel_boxsizer)
         self.Layout()
@@ -278,7 +321,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         adj_weight = my_weight/1000
         if adj_weight < 0.01:
             adj_weight = 0.01
-        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(adj_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+        new_line = [
+            str(item_no),
+            my_type, my_method, '{0:.2f} {1}'.format(adj_weight, suffix),
+            my_country, quantity, '${0:.2f}'.format(cost),
+            '${0:.2f}'.format(my_price)]
         return new_line
 
     def __recalculate_and_update_service_price_options_display(self):
@@ -320,7 +367,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __blank_all_service_fields(self):
         """[summary]
         """
-        self.my_weight_entry.SetValue("") #blank the selection in preparation for a new user
+        self.my_weight_entry.SetValue("")  # blank the selection in preparation for a new user
         self.my_country_choice.SetSelection(-1)
         self.my_weigh_unit_selector.SetSelection(1)
         self.my_item_list.DeleteAllItems()
@@ -350,7 +397,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         for row in range(self.my_busket_item_list.GetItemCount()):
             number_pattern = re.compile(r'\d.{1,5}')
             number_matches = re.findall(number_pattern, self.my_busket_item_list.GetItem(row, 6).GetText())
-        ### TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
+        # TODO: find a way of selectig colum number from text name of the column                                      # pylint: disable=W0511
             total_items += int(self.my_busket_item_list.GetItem(row, 5).GetText())
             total_cost += float(''.join(number_matches))
 
@@ -389,7 +436,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                 if adj_weight < 0.01:
                     adj_weight = 0.01
 
-                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.2f}'.format(adj_weight)
+                new_line = my_method.capitalize() + ' ' + my_type.capitalize() + '\n' + 'Destination:  ' + \
+                    my_country.capitalize() + '    Weight: {0:.2f}'.format(adj_weight)
                 f.write(new_line)
                 f.write('\n---------------------------------------------------\n')
                 quantity -= 1
@@ -409,7 +457,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         file_name = self.application.data_base_directory + self.application.sales_history_file
         with open(file_name, 'a') as invoice_file:  # pylint: disable=W0622
             for each_line in self.application.invoice:
-                item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line # pylint: disable=W0612
+                item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line  # pylint: disable=W0612
                 while quantity > 0:
                     adj_weight = my_weight/1000
                     if adj_weight < 0.01:
@@ -518,7 +566,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
                     cost = my_price * quantity
                     item_no = each_item[0]
                     self.application.invoice.remove(each_item)
-            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+            to_basket = [item_no, my_type, my_method, my_weight,
+                         self.application.current_country, quantity, cost, my_price]
 
         self.application.invoice.append(to_basket)
 
@@ -534,14 +583,16 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         self.delete_or_modify = True
         index = self.my_busket_item_list.GetFirstSelected()
 
-        item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price = self.application.invoice.pop(index)
+        item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price = self.application.invoice.pop(
+            index)
 
         self.my_country_choice.SetSelection(self.my_country_choice.FindString(self.application.current_country))
 
         if quantity > 1:
             quantity -= 1
             cost -= my_price
-            to_basket = [item_no, my_type, my_method, my_weight, self.application.current_country, quantity, cost, my_price]
+            to_basket = [item_no, my_type, my_method, my_weight,
+                         self.application.current_country, quantity, cost, my_price]
 
             self.application.invoice.append(to_basket)
 
