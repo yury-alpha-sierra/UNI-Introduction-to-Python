@@ -1,0 +1,13 @@
+--------------Invoice---------------
+
+
+Item No: 1  Type: Parcel  METHOD:  Express    Weight: 5.00 Kg Destination: Bahrain Quantity: 1    Cost: $150.29 [$150.29ea]
+
+
+-----------End Invoice---------------
+
+-----------Purchased Stamps-----------
+---------------------------------------------------
+Express Parcel
+Destination:  Bahrain    Weight: 5.00
+---------------------------------------------------

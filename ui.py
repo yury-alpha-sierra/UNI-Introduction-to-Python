@@ -137,26 +137,32 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def gross_sales_amount(self):
 
         self.test1 = pn.pivot_table(self.application.sales_history,
-                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.year)],
+                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.year)],
                                     values=['cost'], aggfunc=np.sum)
         print(self.test1)
 
     def customer_flow(self):
 
+        # self.test1 = pn.pivot_table(self.application.sales_history,
+        #                             index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.hour)],
+        #                             values=['sale_id'], aggfunc={'quantity':len})
         self.test1 = pn.pivot_table(self.application.sales_history,
-                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%Y-%m-%d %H:%M:%S').dt.hour)],
+                                    index=[(pn.to_datetime(self.application.sales_history['date_time'], format='%d/%m/%Y %H:%M').dt.hour)],
                                     values=['sale_id'], aggfunc={'quantity':len})
         print(self.test1)
 
     def postage_method_popularity(self):
         print('postage_method_popularity_FUNCTION')
 
+        self.test1 = pn.pivot_table(self.application.sales_history, index=['postage method'], values=['quantity'], aggfunc=np.sum)
+
+        print(self.test1)
+
     def top_5(self):
 
         self.test1 = pn.pivot_table(self.application.sales_history, index=['destination'], values=['quantity', 'cost'], aggfunc=np.sum)
 
-        self.test1.head(n=5)
-
+        print(self.test1.head(n=5))
 
     def __init_service_panel(self):
         """[summary]
@@ -246,7 +252,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         suffix = 'Kg'
 
         item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = line
-        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(my_weight/1000, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
+
+        adj_weight = my_weight/1000
+        if adj_weight < 0.01:
+            adj_weight = 0.01
+        new_line = [str(item_no), my_type, my_method, '{0:.2f} {1}'.format(adj_weight, suffix), my_country, quantity, '${0:.2f}'.format(cost), '${0:.2f}'.format(my_price)]
         return new_line
 
     def __recalculate_and_update_service_price_options_display(self):
@@ -256,6 +266,8 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         try:
             float(self.application.current_weight)
         except ValueError:
+            self.my_item_list.DeleteAllItems()
+            # self.my_item_list.SetBackgroundColour('yellow')
             return
         if self.application.current_country and self.application.current_weight:
             self.my_item_list.DeleteAllItems()
@@ -271,10 +283,17 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
                 if self.application.available_serice_price_options:
                     self.application.available_serice_price_options.clear()
+
                 self.application.available_serice_price_options = self.application.get_available_serice_price_options()
                 if self.application.available_serice_price_options:
+                    self.my_item_list.DeleteAllItems()
+                    # self.my_item_list.SetBackgroundColour('white')
                     for each_item in self.application.available_serice_price_options:
                         self.my_item_list.Append(each_item)
+                else:
+                    self.my_item_list.DeleteAllItems()
+                    # self.my_item_list.SetBackgroundColour('yellow')
+                self.Layout()
 
     def __blank_all_service_fields(self):
         """[summary]
@@ -327,8 +346,12 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
         f.write('--------------Invoice---------------\n\n')
         for each_line in self.application.invoice:
             item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line
+            adj_weight = my_weight/1000
+            if adj_weight < 0.01:
+                adj_weight = 0.01
+
             new_line = '\nItem No: ' + str(item_no) + '  Type: ' + my_type + '  METHOD:  ' + my_method.capitalize() + '    Weight: {0:.2f} {1}'.format(
-                my_weight/1000, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]\n'.format(my_price)
+                adj_weight, suffix) + ' Destination: ' + my_country + ' Quantity: ' + str(quantity) + '    Cost: ${0:.2f}'.format(cost) + ' [${0:.2f}ea]\n'.format(my_price)
             f.write(new_line)
         f.write('\n\n-----------End Invoice---------------')
 
@@ -340,7 +363,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             f.write('---------------------------------------------------\n')
             item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line  # pylint: disable=W0612
             while quantity > 0:
-                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.2f}'.format(my_weight/1000)
+                adj_weight = my_weight/1000
+                if adj_weight < 0.01:
+                    adj_weight = 0.01
+
+                new_line = my_method.capitalize() + ' ' +  my_type.capitalize() + '\n' + 'Destination:  ' + my_country.capitalize() + '    Weight: {0:.2f}'.format(adj_weight)
                 f.write(new_line)
                 f.write('\n---------------------------------------------------\n')
                 quantity -= 1
@@ -362,8 +389,11 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
             for each_line in self.application.invoice:
                 item_no, my_type, my_method, my_weight, my_country, quantity, cost, my_price = each_line # pylint: disable=W0612
                 while quantity > 0:
-                    new_line = '\n' + str(self.application.get_next_sales_number()) + ',' + now.strftime('%Y-%m-%d %H:%M:00') + ',' + my_type.lower() + ',' + str('{0:.2f}'.format(
-                        my_weight/1000)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.capitalize() + ',' + str(1) + ',' + str(my_price)
+                    adj_weight = my_weight/1000
+                    if adj_weight < 0.01:
+                        adj_weight = 0.01
+                    new_line = '\n' + str(self.application.get_next_sales_number()) + ',' + now.strftime('%d/%m/%Y %H:%M') + ',' + my_type.lower() + ',' + str('{0:.2f}'.format(
+                        adj_weight)) + ',' + my_country.capitalize() + ',' + my_method.capitalize() + ' ' + my_type.capitalize() + ',' + str(1) + ',' + str(my_price)
                     invoice_file.write(new_line)
                     quantity -= 1
 
@@ -396,11 +426,7 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
 
     def __weight_entry_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
 
-        if not self.weight_entry_error:
-            self.__recalculate_and_update_service_price_options_display()
-        else:
-            self.weight_entry_error = False
-
+        self.__recalculate_and_update_service_price_options_display()
     def __my_weight_entry_handle_EVT_CHAR(self, event):  # pylint: disable=W0613
         """[summary]
         """
@@ -413,15 +439,18 @@ class Ui(wx.Frame):  # pylint: disable=too-many-ancestors
     def __my_next_button_handle_EVT_BUTTON(self, event):  # pylint: disable=W0613
         """[summary]
         """
+
         if self.application.invoice:
             self.__print_invoice()
             self.__create_sales_record()
         self.application.invoice = None
         self.application.sales_history = None
         self.application.sales_history = self.application.import_sales_history()
-        # nn = self.application.sales_history.index.max()
+        # self.my_item_list.SetBackgroundColour('white')
+        self.my_item_list.Layout()
         self.my_status_bar.SetStatusText('Sale number: {}'.format(self.application.get_next_sales_number()))
         self.__blank_all_service_fields()
+        self.Layout()
 
     def __country_choice_handle_EVT_CHOICE(self, event):  # pylint: disable=W0613
         """[summary]
